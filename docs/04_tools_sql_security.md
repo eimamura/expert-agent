@@ -38,9 +38,18 @@ def list_tables() -> list[str]:
 def get_table_schema(table_name: str) -> dict:
     ...
 
-def run_readonly_sql(query: str) -> list[dict]:
+class SqlToolResult(TypedDict):
+    rows: list[dict]
+    redacted_columns: list[str]
+    row_count: int
+    truncated: bool
+    metadata: dict
+
+def run_readonly_sql(query: str) -> SqlToolResult:
     ...
 ```
+
+`run_readonly_sql()` must return redacted rows and metadata, not raw database rows.
 
 ## Primary safety requirement
 
@@ -236,4 +245,3 @@ If production read access is needed later:
 - use network and credential isolation;
 - prefer replicas or read-only endpoints;
 - keep write credentials out of the agent runtime.
-

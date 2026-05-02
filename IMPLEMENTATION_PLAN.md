@@ -343,13 +343,13 @@ References:
 
 Work:
 
-- Add path-traversal tests.
-- Add SQL-safety tests.
-- Add redaction tests.
-- Add trace tests.
-- Add response-format tests.
-- Add knowledge-loader tests.
-- Add tool tests.
+- Audit and fill gaps in path-traversal tests.
+- Audit and fill gaps in SQL-safety tests.
+- Audit and fill gaps in redaction tests.
+- Audit and fill gaps in trace tests.
+- Audit and fill gaps in response-format tests.
+- Audit and fill gaps in knowledge-loader tests.
+- Audit and fill gaps in tool tests.
 
 ## Step 19: Final verification
 

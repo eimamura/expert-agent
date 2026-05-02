@@ -5,6 +5,17 @@ The active implementation source is the split documentation set, starting from `
 
 ---
 
+## v3.6 - 2026-05-02
+
+Clarified Phase 1 documentation after implementation-plan review.
+
+- Standardized dependency management on `uv`.
+- Changed the SQL execution wrapper contract to return redacted rows plus metadata.
+- Removed Phase 1 repository-structure placeholders that were not in the plan.
+- Clarified that the final test pass audits and fills gaps instead of deferring all tests.
+
+---
+
 ## v3.5 - 2026-05-02
 
 Converted all repository Markdown files to English-only.
@@ -100,4 +111,3 @@ Older revision.
 - Established the Phase 0 through Phase 7 roadmap.
 - Defined the local-first MVP direction.
 - Introduced the minimal agent loop, Markdown knowledge, read-only tools, redaction, trace, and eval strategy.
-

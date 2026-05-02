@@ -63,24 +63,16 @@ Reasons:
 
 Required:
 
-- Use `uv` or `poetry`.
+- Use `uv`.
 - Commit the lock file.
 - Pin SDK and LangChain-family package versions if such packages are introduced.
 
-Recommended with `uv`:
+Recommended setup:
 
 ```bash
 uv init
 uv add "anthropic" "openai" "sqlglot>=25.0" "pydantic" "pyyaml" "pytest" "ulid-py"
 uv lock
-```
-
-Recommended with `poetry`:
-
-```bash
-poetry init
-poetry add "anthropic" "openai" "sqlglot>=25.0" "pydantic" "pyyaml" "pytest" "ulid-py"
-poetry lock
 ```
 
 ## Version floors
@@ -105,7 +97,7 @@ poetry lock
 | Trace | JSONL | Lightweight and easy to externalize later. |
 | `run_id` | ULID | Sortable by time and low collision risk. |
 | DB | SQLite for local MVP | Easy local development target. |
-| Dependency manager | `uv` or `poetry` | Lock file required. |
+| Dependency manager | `uv` | Lock file required. |
 
 ## Recommended repository structure
 
@@ -144,8 +136,6 @@ expert-agent/
   tools/
     __init__.py
     sql.py
-    files.py
-    reporting.py
 
   knowledge/
     domain_overview.md
@@ -165,7 +155,6 @@ expert-agent/
   rules/
     allowed_tables.yml
     thresholds.yml
-    approval_rules.yml
     redaction.yml
     pii_columns.yml
 
@@ -174,9 +163,6 @@ expert-agent/
     domain_cases.jsonl
     sql_safety_cases.jsonl
     response_format_cases.jsonl
-
-  memory/
-    agent_state.sqlite
 
   traces/
     .gitkeep
@@ -194,4 +180,3 @@ expert-agent/
 
 All repository Markdown must be written in English.
 Future knowledge files, policy files, prompts, and eval descriptions should also be English unless a task explicitly requires localized domain source material.
-
