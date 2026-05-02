@@ -66,14 +66,16 @@ uv run python app/main.py trace-summary fixtures/traces/success_basic.jsonl
 
 ## HTTP API Usage
 
-Initialize and start the API server:
+Start the API server:
 
-```python
-import app.api as api
-import uvicorn
+```bash
+uv run uvicorn app.api:app --host 0.0.0.0 --port 8000
+```
 
-api.init()  # loads config and creates RunStore (runs.db)
-uvicorn.run(api.app, host="0.0.0.0", port=8000)
+For development with auto-reload:
+
+```bash
+uv run uvicorn app.api:app --reload
 ```
 
 ### Endpoints

@@ -5,6 +5,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from contextlib import asynccontextmanager
+
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from pydantic import BaseModel
 
@@ -16,7 +18,14 @@ from runtime.redaction import redact_text
 from runtime.run_store import RunStore
 from runtime.trace_reader import load_validated_trace
 
-app = FastAPI(title="Expert Agent API", version="3.0.0")
+
+@asynccontextmanager
+async def _lifespan(app: FastAPI):
+    init()
+    yield
+
+
+app = FastAPI(title="Expert Agent API", version="3.0.0", lifespan=_lifespan)
 
 _config: dict[str, Any] = {}
 _run_store: RunStore | None = None
