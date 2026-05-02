@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from runtime.redaction import redact_text
+from runtime.redaction import redact_jsonable
 
 
 SCHEMA_VERSION = "1.0"
@@ -17,21 +17,12 @@ RUN_FINISHED_STATUSES = {
     "tool_error",
     "llm_error",
     "validation_error",
+    "timeout_error",
 }
 
 
 def utc_timestamp() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
-
-
-def _redact_jsonable(value: Any) -> Any:
-    if isinstance(value, str):
-        return redact_text(value)
-    if isinstance(value, list):
-        return [_redact_jsonable(item) for item in value]
-    if isinstance(value, dict):
-        return {key: _redact_jsonable(child) for key, child in value.items()}
-    return value
 
 
 class TraceWriter:
@@ -56,7 +47,7 @@ class TraceWriter:
             raise ValueError(f"Invalid run_finished status: {fields.get('status')}")
         event = self._base(event_type)
         event.update(fields)
-        redacted = _redact_jsonable(event)
+        redacted = redact_jsonable(event)
         with self.path.open("a", encoding="utf-8", buffering=1) as handle:
             handle.write(json.dumps(redacted, sort_keys=True, default=str) + "\n")
 
@@ -104,7 +95,10 @@ class TraceWriter:
         output_sample_strategy: str,
         output_sample_size: int,
         redacted_columns: list[str] | None = None,
-        error: str | None = None,
+        error: Any = None,
+        tool_result_truncated: bool = False,
+        max_tool_result_bytes: int | None = None,
+        observed_tool_result_bytes: int | None = None,
     ) -> None:
         self.write(
             "tool_call",
@@ -117,6 +111,9 @@ class TraceWriter:
                 "output_sample_size": output_sample_size,
                 "redacted_columns": redacted_columns or [],
                 "error": error,
+                "tool_result_truncated": tool_result_truncated,
+                "max_tool_result_bytes": max_tool_result_bytes,
+                "observed_tool_result_bytes": observed_tool_result_bytes,
             },
         )
 
@@ -128,7 +125,8 @@ class TraceWriter:
         total_input_tokens: int,
         total_output_tokens: int,
         total_cost_usd: float,
-        error: str | None,
+        error: Any,
+        limit_metadata: dict[str, Any] | None = None,
     ) -> None:
         self.write(
             "run_finished",
@@ -139,5 +137,6 @@ class TraceWriter:
                 "total_output_tokens": total_output_tokens,
                 "total_cost_usd": total_cost_usd,
                 "error": error,
+                "limit_metadata": limit_metadata or {},
             },
         )

@@ -86,11 +86,11 @@ Agents should load context in this order:
 1. `SPEC.md`
 2. `docs/00_project_overview.md`
 3. `docs/01_architecture_principles.md`
-4. `docs/02_phase1_mvp_scope.md`
-5. `IMPLEMENTATION_PLAN.md`
+4. `docs/baselines/README.md`
+5. `docs/phase_plans/README.md`
 6. Topic-specific documents for the current step
 
-Stable context should be loaded before mutable execution state. This separation also helps prompt caching because architecture documents change less often than the implementation plan.
+Stable context should be loaded before phase-specific plan history. This separation also helps prompt caching because architecture documents change less often than phase summaries.
 
 ## Phase boundaries
 
@@ -114,4 +114,3 @@ Phase 1 must not implement:
 - vector search;
 - write tools;
 - production mutation.
-

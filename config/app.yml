@@ -4,6 +4,8 @@ runtime:
   max_output_tokens_per_call: 4096
   max_run_cost_usd: 3.0
   max_tool_result_bytes: 20000
+  provider_timeout_seconds: 60
+  tool_timeout_seconds: 60
 
 llm:
   provider: "anthropic"

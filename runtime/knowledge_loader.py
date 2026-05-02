@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import TypedDict
+from urllib.parse import unquote
 
 from runtime.hashing import sha256_text
 
@@ -14,7 +15,8 @@ class KnowledgeFileInfo(TypedDict):
 
 
 def _safe_markdown_path(root: Path, requested_path: str) -> Path:
-    requested = Path(requested_path)
+    decoded_path = unquote(requested_path)
+    requested = Path(decoded_path)
     if requested.is_absolute():
         raise ValueError("Absolute paths are not allowed")
     if requested.suffix.lower() != ".md":

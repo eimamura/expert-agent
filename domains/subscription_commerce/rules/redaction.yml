@@ -5,3 +5,5 @@ patterns:
     regex: '(?i)(api[_-]?key|token|secret)\s*[:=]\s*[A-Za-z0-9_\-]{8,}'
   - name: phone
     regex: '\b(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b'
+  - name: connection_string
+    regex: "(?i)\\b(?:postgres|mysql|sqlite)://[^\\s\"']+"

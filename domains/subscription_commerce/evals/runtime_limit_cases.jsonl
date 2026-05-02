@@ -1,0 +1,3 @@
+{"id":"limit_001","expected_terminal_status":"max_steps_exceeded","required_limit_metadata":["max_steps","observed_steps"]}
+{"id":"limit_002","expected_terminal_status":"max_tokens_exceeded","required_limit_metadata":["max_total_tokens","observed_total_tokens"]}
+{"id":"limit_003","expected_terminal_status":"max_cost_exceeded","required_limit_metadata":["max_run_cost_usd","observed_total_cost_usd"]}

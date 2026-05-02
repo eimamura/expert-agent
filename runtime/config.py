@@ -40,6 +40,8 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         "max_output_tokens_per_call",
         "max_run_cost_usd",
         "max_tool_result_bytes",
+        "provider_timeout_seconds",
+        "tool_timeout_seconds",
     ]:
         if runtime.get(key, 0) <= 0:
             raise ValueError(f"runtime.{key} must be positive")

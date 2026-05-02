@@ -13,7 +13,7 @@ This document defines eval, pytest, trace use, and quality checks.
 
 ## Related documents
 
-- `../IMPLEMENTATION_PLAN.md`
+- `phase_plans/phase1_implementation_plan.md`
 
 ## Implementation targets
 
@@ -127,7 +127,8 @@ Trace-based tests should verify:
 
 ## Phase 2 completion criteria
 
-Phase 2 is not part of `IMPLEMENTATION_PLAN.md`, but the future Phase 2 plan should satisfy:
+Phase 2 is complete in `docs/phase_plans/phase2_implementation_plan.md`.
+The completed Phase 2 baseline satisfies:
 
 - eval runner exists;
 - SQL safety evals exist;

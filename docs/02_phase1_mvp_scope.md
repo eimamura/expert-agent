@@ -12,7 +12,7 @@ This document defines Phase 0 and Phase 1 MVP scope, non-goals, and completion c
 
 ## Related documents
 
-- `../IMPLEMENTATION_PLAN.md`
+- `phase_plans/phase1_implementation_plan.md`
 - `docs/03_runtime_loop.md`
 - `docs/04_tools_sql_security.md`
 - `docs/05_redaction_trace.md`

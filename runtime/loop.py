@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import json
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from pathlib import Path
+import signal
+import threading
 from typing import Any, Protocol
 
 from agents.prompts import SYSTEM_PROMPT_TEMPLATE
@@ -11,6 +14,8 @@ from runtime.formatter import ensure_response_format
 from runtime.hashing import compute_input_hash, sha256_text, stable_json_dumps
 from runtime.ids import new_run_id
 from runtime.knowledge_loader import build_knowledge_index, read_knowledge_file
+from runtime.provider_double import ScriptedProviderTimeout
+from runtime.redaction import redact_jsonable
 from runtime.state import AgentState
 from runtime.trace import TraceWriter
 from tools.sql import get_table_schema, list_tables, run_readonly_sql
@@ -162,11 +167,81 @@ def _execute_tool(name: str, args: dict[str, Any], config: dict[str, Any]) -> An
     raise ValueError(f"Unknown tool: {name}")
 
 
-def _truncate_tool_result(value: Any, max_bytes: int) -> tuple[Any, bool]:
+def _normalize_error(error_type: str, message: str, retryable: bool, source: str) -> dict[str, Any]:
+    return {
+        "type": error_type,
+        "message": message,
+        "retryable": retryable,
+        "source": source,
+    }
+
+
+def _truncate_tool_result(value: Any, max_bytes: int) -> tuple[Any, bool, int]:
     encoded = json.dumps(value, default=str)
-    if len(encoded.encode("utf-8")) <= max_bytes:
-        return value, False
-    return {"truncated": True, "preview": encoded[:max_bytes]}, True
+    observed_size = len(encoded.encode("utf-8"))
+    if observed_size <= max_bytes:
+        return value, False, observed_size
+    return {"truncated": True, "preview": encoded[:max_bytes]}, True, observed_size
+
+
+def _run_with_timeout(callable_: Any, timeout_seconds: int, timeout_message: str) -> Any:
+    if threading.current_thread() is threading.main_thread() and hasattr(signal, "SIGALRM"):
+        previous_handler = signal.getsignal(signal.SIGALRM)
+
+        def handler(signum: int, frame: Any) -> None:
+            raise TimeoutError(timeout_message)
+
+        signal.signal(signal.SIGALRM, handler)
+        signal.setitimer(signal.ITIMER_REAL, timeout_seconds)
+        try:
+            return callable_()
+        finally:
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            signal.signal(signal.SIGALRM, previous_handler)
+
+    executor = ThreadPoolExecutor(max_workers=1)
+    future = executor.submit(callable_)
+    try:
+        return future.result(timeout=timeout_seconds)
+    except FutureTimeoutError as exc:
+        future.cancel()
+        raise TimeoutError(timeout_message) from exc
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
+
+
+def _call_provider_with_timeout(provider: LlmProvider, timeout_seconds: int, **kwargs: Any) -> dict[str, Any]:
+    return _run_with_timeout(
+        lambda: provider.call(**kwargs),
+        timeout_seconds,
+        f"Provider call exceeded {timeout_seconds} seconds",
+    )
+
+
+def _execute_tool_with_timeout(name: str, args: dict[str, Any], config: dict[str, Any]) -> Any:
+    timeout_seconds = int(config["runtime"]["tool_timeout_seconds"])
+    return _run_with_timeout(
+        lambda: _execute_tool(name, args, config),
+        timeout_seconds,
+        f"Tool call exceeded {timeout_seconds} seconds",
+    )
+
+
+def _validate_provider_response(response: dict[str, Any]) -> None:
+    if not isinstance(response, dict):
+        raise ValueError("Provider response must be a mapping")
+    content = response.get("content")
+    if not isinstance(content, list):
+        raise ValueError("Provider response content must be a list")
+    usage = response.get("usage", {})
+    if not isinstance(usage, dict):
+        raise ValueError("Provider response usage must be a mapping")
+    for key in ("input_tokens", "output_tokens"):
+        if key not in usage:
+            raise ValueError(f"Provider response usage missing {key}")
+    for block in content:
+        if not isinstance(block, dict) or "type" not in block:
+            raise ValueError("Provider response content blocks must include type")
 
 
 def run_agent(
@@ -207,7 +282,9 @@ def run_agent(
     try:
         while state.steps < int(config["runtime"]["max_steps"]):
             state.steps += 1
-            response = provider.call(
+            response = _call_provider_with_timeout(
+                provider,
+                int(config["runtime"]["provider_timeout_seconds"]),
                 system_prompt=system_prompt,
                 messages=state.messages,
                 tools=TOOL_SCHEMAS,
@@ -215,6 +292,7 @@ def run_agent(
                 max_output_tokens=int(config["runtime"]["max_output_tokens_per_call"]),
                 temperature=float(config["llm"].get("temperature", 0)),
             )
+            _validate_provider_response(response)
             usage = response.get("usage", {})
             input_tokens = int(usage.get("input_tokens", 0))
             output_tokens = int(usage.get("output_tokens", 0))
@@ -243,6 +321,18 @@ def run_agent(
             exceeded = costs.exceeded_status()
             if exceeded:
                 state.final_status = exceeded
+                state.error = _normalize_error(
+                    "budget_error",
+                    f"Run stopped after exceeding {exceeded}",
+                    False,
+                    "budget",
+                )
+                state.limit_metadata = {
+                    "max_total_tokens": int(config["runtime"]["max_total_tokens"]),
+                    "max_run_cost_usd": float(config["runtime"]["max_run_cost_usd"]),
+                    "observed_total_tokens": state.total_input_tokens + state.total_output_tokens,
+                    "observed_total_cost_usd": state.total_cost_usd,
+                }
                 state.final_answer = ensure_response_format(text_summary)
                 break
 
@@ -258,18 +348,28 @@ def run_agent(
                 name = tool_use["name"]
                 args = tool_use.get("input") or {}
                 try:
-                    result = _execute_tool(name, args, config)
-                    result, oversized = _truncate_tool_result(
+                    result = _execute_tool_with_timeout(name, args, config)
+                    result, oversized, observed_size = _truncate_tool_result(
                         result, int(config["runtime"]["max_tool_result_bytes"])
                     )
+                    result = redact_jsonable(result)
                     status = "success"
                     error = None
                     redacted_columns = result.get("redacted_columns", []) if isinstance(result, dict) else []
-                except Exception as exc:
-                    result = {"error": str(exc)}
+                except TimeoutError as exc:
+                    result = redact_jsonable({"error": str(exc)})
                     oversized = False
+                    observed_size = len(json.dumps(result, default=str).encode("utf-8"))
                     status = "error"
-                    error = str(exc)
+                    error = _normalize_error("timeout_error", str(exc), True, "tool")
+                    redacted_columns = []
+                    state.final_status = "timeout_error"
+                except Exception as exc:
+                    result = redact_jsonable({"error": str(exc)})
+                    oversized = False
+                    observed_size = len(json.dumps(result, default=str).encode("utf-8"))
+                    status = "error"
+                    error = _normalize_error("tool_error", str(exc), False, "tool")
                     redacted_columns = []
                     state.final_status = "tool_error"
                 state.tool_calls.append({"tool_name": name, "arguments": args, "status": status})
@@ -282,6 +382,9 @@ def run_agent(
                     output_sample_size=int(config["trace"]["output_sample_size"]),
                     redacted_columns=redacted_columns,
                     error=error,
+                    tool_result_truncated=oversized,
+                    max_tool_result_bytes=int(config["runtime"]["max_tool_result_bytes"]),
+                    observed_tool_result_bytes=observed_size,
                 )
                 tool_results.append(
                     {
@@ -293,17 +396,35 @@ def run_agent(
                 )
                 if oversized:
                     state.tool_calls[-1]["truncated"] = True
+                    state.tool_calls[-1]["observed_tool_result_bytes"] = observed_size
             if state.final_status == "tool_error":
-                state.error = "Tool execution failed"
+                state.error = _normalize_error("tool_error", "Tool execution failed", False, "tool")
                 state.final_answer = ensure_response_format("A tool failed before a final answer was produced.")
+                break
+            if state.final_status == "timeout_error":
+                state.error = _normalize_error("timeout_error", "Tool execution timed out", True, "tool")
+                state.final_answer = ensure_response_format("A tool timed out before a final answer was produced.")
                 break
             state.messages.append({"role": "user", "content": tool_results})
         else:
             state.final_status = "max_steps_exceeded"
+            state.error = _normalize_error("budget_error", "Run stopped after max steps", False, "budget")
+            state.limit_metadata = {
+                "max_steps": int(config["runtime"]["max_steps"]),
+                "observed_steps": state.steps,
+            }
             state.final_answer = ensure_response_format(state.final_answer)
+    except (TimeoutError, ScriptedProviderTimeout) as exc:
+        state.final_status = "timeout_error"
+        state.error = _normalize_error("timeout_error", str(exc), True, "provider")
+        state.final_answer = ensure_response_format("The provider timed out before a final answer was produced.")
+    except ValueError as exc:
+        state.final_status = "validation_error"
+        state.error = _normalize_error("validation_error", str(exc), False, "validator")
+        state.final_answer = ensure_response_format("The provider returned an invalid response.")
     except Exception as exc:
         state.final_status = "llm_error"
-        state.error = str(exc)
+        state.error = _normalize_error("provider_error", str(exc), False, "provider")
         state.final_answer = ensure_response_format("The LLM call failed before a final answer was produced.")
     finally:
         trace.run_finished(
@@ -313,5 +434,6 @@ def run_agent(
             total_output_tokens=state.total_output_tokens,
             total_cost_usd=state.total_cost_usd,
             error=state.error,
+            limit_metadata=state.limit_metadata,
         )
     return state

@@ -29,10 +29,39 @@ def test_read_knowledge_file_rejects_traversal(tmp_path: Path) -> None:
         read_knowledge_file(tmp_path, "../outside.md", 100)
 
 
+def test_read_knowledge_file_rejects_encoded_traversal(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="traversal"):
+        read_knowledge_file(tmp_path, "%2e%2e/outside.md", 100)
+
+
+def test_read_knowledge_file_rejects_symlink_escape(tmp_path: Path) -> None:
+    outside = tmp_path / "outside"
+    root = tmp_path / "root"
+    outside.mkdir()
+    root.mkdir()
+    (outside / "secret.md").write_text("secret", encoding="utf-8")
+    (root / "link.md").symlink_to(outside / "secret.md")
+    with pytest.raises(ValueError, match="traversal"):
+        read_knowledge_file(root, "link.md", 100)
+
+
 def test_read_knowledge_file_rejects_non_markdown(tmp_path: Path) -> None:
     (tmp_path / "a.txt").write_text("x", encoding="utf-8")
     with pytest.raises(ValueError, match="Markdown"):
         read_knowledge_file(tmp_path, "a.txt", 100)
+
+
+def test_read_knowledge_file_rejects_extension_confusion(tmp_path: Path) -> None:
+    (tmp_path / "a.md.txt").write_text("x", encoding="utf-8")
+    with pytest.raises(ValueError, match="Markdown"):
+        read_knowledge_file(tmp_path, "a.md.txt", 100)
+
+
+def test_read_knowledge_file_accepts_valid_relative_markdown(tmp_path: Path) -> None:
+    nested = tmp_path / "nested"
+    nested.mkdir()
+    (nested / "a.md").write_text("valid", encoding="utf-8")
+    assert read_knowledge_file(tmp_path, "nested/a.md", 100) == "valid"
 
 
 def test_read_knowledge_file_missing_and_max_bytes(tmp_path: Path) -> None:

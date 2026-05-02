@@ -18,4 +18,5 @@ class AgentState:
     total_cost_usd: float = 0.0
     final_status: str = "success"
     final_answer: str = ""
-    error: str | None = None
+    error: dict[str, Any] | None = None
+    limit_metadata: dict[str, Any] = field(default_factory=dict)

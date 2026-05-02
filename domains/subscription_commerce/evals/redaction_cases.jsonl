@@ -1,0 +1,2 @@
+{"id":"redaction_001","input":"email jane@example.com token=abcdefgh123456 phone 555-123-4567","forbidden_output_markers":["jane@example.com","abcdefgh123456","555-123-4567"],"required_output_markers":["[REDACTED]"]}
+{"id":"redaction_002","input":"DATABASE_URL=postgres://user:pass@localhost/db","forbidden_output_markers":["postgres://user:pass@localhost/db"],"required_output_markers":["[REDACTED]"]}

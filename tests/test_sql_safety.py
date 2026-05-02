@@ -17,6 +17,16 @@ ALLOWED = {"main.customers", "main.orders", "main.order_items", "main.products"}
             {"main.orders"},
         ),
         ("SELECT * FROM (SELECT * FROM main.customers) c", {"main.customers"}),
+        (
+            "SELECT c.customer_id, o.order_id FROM main.customers c JOIN main.orders o "
+            "ON c.customer_id = o.customer_id",
+            {"main.customers", "main.orders"},
+        ),
+        (
+            "WITH recent_orders AS (SELECT * FROM main.orders WHERE order_id IN "
+            "(SELECT order_id FROM main.order_items)) SELECT COUNT(*) FROM recent_orders",
+            {"main.orders", "main.order_items"},
+        ),
     ],
 )
 def test_extract_tables_and_validate_allowed_selects(query: str, tables: set[str]) -> None:
@@ -35,8 +45,16 @@ def test_extract_tables_and_validate_allowed_selects(query: str, tables: set[str
         "SELECT * FROM main.orders; DROP TABLE main.orders;",
         "SELECT * FROM main.payments",
         "SELECT * FROM orders",
+        "SELECT * FROM main.orders WHERE customer_id IN (SELECT customer_id FROM main.payments)",
     ],
 )
 def test_validate_readonly_sql_rejects_unsafe_or_unapproved_sql(query: str) -> None:
     with pytest.raises(ValueError):
         validate_readonly_sql(query, "sqlite", ALLOWED)
+
+
+@pytest.mark.parametrize("dialect", ["sqlite", "postgres", "mysql", "tsql", "databricks"])
+def test_validate_readonly_sql_across_supported_parser_dialects(dialect: str) -> None:
+    query = "SELECT COUNT(*) FROM main.orders"
+    assert extract_tables(query, dialect) == {"main.orders"}
+    validate_readonly_sql(query, dialect, ALLOWED)

@@ -10,3 +10,7 @@
 {"id":"sql_010","query":"SELECT * FROM orders","allowed":false}
 {"id":"sql_011","query":"WITH recent_orders AS (SELECT * FROM main.orders) SELECT COUNT(*) FROM recent_orders","allowed":true,"expected_tables":["main.orders"]}
 {"id":"sql_012","query":"SELECT * FROM (SELECT * FROM main.customers) c","allowed":true,"expected_tables":["main.customers"]}
+{"id":"sql_013","query":"SELECT c.customer_id, o.order_id FROM main.customers c JOIN main.orders o ON c.customer_id = o.customer_id","allowed":true,"expected_tables":["main.customers","main.orders"]}
+{"id":"sql_014","query":"WITH recent_orders AS (SELECT * FROM main.orders WHERE order_id IN (SELECT order_id FROM main.order_items)) SELECT COUNT(*) FROM recent_orders","allowed":true,"expected_tables":["main.orders","main.order_items"]}
+{"id":"sql_015","query":"SELECT * FROM main.orders WHERE customer_id IN (SELECT customer_id FROM main.payments)","allowed":false}
+{"id":"sql_016","query":"SELECT COUNT(*) FROM main.orders","allowed":true,"dialects":["sqlite","postgres","mysql","tsql","databricks"],"expected_tables":["main.orders"]}

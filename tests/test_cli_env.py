@@ -45,3 +45,13 @@ def test_main_loads_dotenv_before_running_agent(tmp_path: Path, monkeypatch: Any
     monkeypatch.setattr(cli, "run_agent", fake_run_agent)
 
     assert cli.main(["--config", str(config_path), "What should I investigate first?"]) == 0
+
+
+def test_main_trace_summary_and_eval_commands(capsys: Any) -> None:
+    assert cli.main(["trace-summary", "fixtures/traces/success_basic.jsonl"]) == 0
+    summary = capsys.readouterr().out
+    assert '"status": "success"' in summary
+
+    assert cli.main(["eval"]) == 0
+    output = capsys.readouterr().out
+    assert '"status": "success"' in output

@@ -5,13 +5,26 @@ The active implementation source is the split documentation set, starting from `
 
 ---
 
+## v3.8 - 2026-05-02
+
+Organized phase plan documentation.
+
+- Added `docs/phase_plans/README.md` as the phase plan index.
+- Moved Phase 1 history to `docs/phase_plans/phase1_implementation_plan.md`.
+- Moved Phase 2 status to `docs/phase_plans/phase2_implementation_plan.md` and compressed it into a completion summary.
+- Moved Version 1 Phase 1 baseline to `docs/baselines/version1_phase1_baseline.md`.
+- Replaced root `IMPLEMENTATION_PLAN.md` with a compatibility pointer.
+- Updated read-order and source-of-truth references away from old active-plan paths.
+
+---
+
 ## v3.7 - 2026-05-02
 
 Added the Phase 2 preparation plan.
 
-- Added `docs/09_phase2_implementation_plan.md` as a separate plan for trace, eval, and runtime refinement.
-- Kept `IMPLEMENTATION_PLAN.md` scoped to Phase 1 historical execution state.
-- Anchored Phase 2 planning to the `docs/08_version1_phase1_baseline.md` `v1.0.0` baseline.
+- Added `docs/phase_plans/phase2_implementation_plan.md` as a separate plan for trace, eval, and runtime refinement.
+- Kept `docs/phase_plans/phase1_implementation_plan.md` scoped to Phase 1 history.
+- Anchored Phase 2 planning to the `docs/baselines/version1_phase1_baseline.md` `v1.0.0` baseline.
 - Preserved Phase 1 guardrails in the Phase 2 planning scope.
 
 ---
@@ -46,10 +59,10 @@ Split the previous single large `SPEC.md` into an entry file, detailed topic doc
 - Preserved the previous complete SPEC v3.3 under `_archive/long_SPEC_archive.md`.
 - Changed `SPEC.md` into a short operational entry point.
 - Split details into `docs/00_project_overview.md` through `docs/07_future_scaling.md`.
-- Added `IMPLEMENTATION_PLAN.md` and fixed Phase 1 implementation order as Step 0 through Step 19.
+- Added `docs/phase_plans/phase1_implementation_plan.md` and fixed Phase 1 implementation order as Step 0 through Step 19.
 - Added `CLAUDE.md` as coding-agent guardrails.
-- Added checklist-based execution-state handling to `IMPLEMENTATION_PLAN.md`.
-- Clarified that `IMPLEMENTATION_PLAN.md` is Phase 1 only.
+- Added checklist-based progress handling to `docs/phase_plans/phase1_implementation_plan.md`.
+- Clarified that `docs/phase_plans/phase1_implementation_plan.md` is Phase 1 only.
 - Added ignore files so `_archive/` is excluded from Claude, Cursor, and Codex exploration.
 
 ---

@@ -106,7 +106,7 @@ expert-agent/
   AGENTS.md
   CLAUDE.md
   SPEC.md
-  IMPLEMENTATION_PLAN.md
+  IMPLEMENTATION_PLAN.md  # Compatibility pointer
   CHANGELOG.md
   pyproject.toml
   uv.lock
@@ -132,6 +132,16 @@ expert-agent/
 
   config/
     app.yml
+
+  docs/
+    baselines/
+      README.md
+      version1_phase1_baseline.md
+
+    phase_plans/
+      README.md
+      phase1_implementation_plan.md
+      phase2_implementation_plan.md
 
   tools/
     __init__.py

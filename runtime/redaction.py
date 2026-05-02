@@ -45,6 +45,16 @@ def redact_text(text: str) -> str:
     return redacted
 
 
+def redact_jsonable(value: Any) -> Any:
+    if isinstance(value, str):
+        return redact_text(value)
+    if isinstance(value, list):
+        return [redact_jsonable(item) for item in value]
+    if isinstance(value, dict):
+        return {key: redact_jsonable(child) for key, child in value.items()}
+    return value
+
+
 def _redact_value(value: Any, pii_columns: set[str], redacted_columns: set[str]) -> Any:
     if isinstance(value, dict):
         result: dict[str, Any] = {}
