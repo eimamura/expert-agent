@@ -10,6 +10,10 @@ from typing import Any, Protocol
 from agents.prompts import SYSTEM_PROMPT_TEMPLATE
 from runtime.config import domain_path, knowledge_path, load_allowed_tables, runtime_snapshot, resolve_model_id
 from runtime.cost import CostTracker, estimate_call_cost_usd
+from runtime.domain_instructions import (
+    load_domain_instruction_files,
+    render_domain_instructions,
+)
 from runtime.fts_backend import SqliteFtsBackend
 from runtime.formatter import ensure_response_format
 from runtime.hashing import compute_input_hash, sha256_text, stable_json_dumps
@@ -145,12 +149,16 @@ def build_input_hash_parts(
     question: str,
     config_snapshot: dict[str, Any],
     knowledge_files: list[dict[str, Any]],
+    domain_instruction_files: list[dict[str, Any]],
     allowed_tables: set[str],
 ) -> dict[str, Any]:
     return {
         "question": question,
         "system_prompt_template": SYSTEM_PROMPT_TEMPLATE,
         "knowledge_files": [{"path": item["path"], "sha256": item["sha256"]} for item in knowledge_files],
+        "domain_instruction_files": [
+            {"path": item["path"], "sha256": item["sha256"]} for item in domain_instruction_files
+        ],
         "config_snapshot": config_snapshot,
         "tool_schema_identifiers": _tool_schema_identifiers(),
         "allowed_table_hash": sha256_text(stable_json_dumps(sorted(allowed_tables))),
@@ -289,12 +297,15 @@ def run_agent(
     else:
         backend = NaiveBackend(kpath)
     knowledge_index, knowledge_files = build_knowledge_index(kpath, backend=backend, top_n=top_n)
+    domain_instruction_files = load_domain_instruction_files(domain_path(config))
+    domain_instructions = render_domain_instructions(domain_instruction_files)
     allowed_tables = load_allowed_tables(config)
     input_hash = compute_input_hash(
         build_input_hash_parts(
             question=question,
             config_snapshot=snapshot,
             knowledge_files=knowledge_files,
+            domain_instruction_files=domain_instruction_files,
             allowed_tables=allowed_tables,
         )
     )
@@ -307,7 +318,10 @@ def run_agent(
     trace = TraceWriter(Path(config["trace"]["dir"]), state.run_id, state.parent_run_id)
     trace.run_started(input_hash=input_hash, config_snapshot=snapshot, question=question)
 
-    system_prompt = SYSTEM_PROMPT_TEMPLATE.format(KNOWLEDGE_INDEX=knowledge_index)
+    system_prompt = SYSTEM_PROMPT_TEMPLATE.format(
+        DOMAIN_INSTRUCTIONS=domain_instructions,
+        KNOWLEDGE_INDEX=knowledge_index,
+    )
     state.messages.append({"role": "user", "content": question})
     provider = provider or AnthropicProvider()
     costs = CostTracker(

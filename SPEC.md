@@ -59,6 +59,7 @@ Phase 4 SQLite FTS knowledge search is complete, and the Phase 6 Web UI channel 
 - Start local-first.
 - Keep the current baseline single-agent.
 - Use Markdown-centered knowledge, skills, and policies.
+- Inject domain pack `skills/*.md` and `policies/*.md` into each run's system prompt.
 - Keep the minimal agent loop direct.
 - Use read-only tools by default.
 - Use a read-only DB user.

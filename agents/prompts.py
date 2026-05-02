@@ -4,6 +4,10 @@ Use the Markdown knowledge index below to decide which files to inspect. When ev
 
 Never use redacted values for value-level analysis. If a value is redacted, you may discuss only the presence of redaction and its impact on uncertainty.
 
+Follow the domain skills and policies below as run-level instructions:
+
+{DOMAIN_INSTRUCTIONS}
+
 Final answers must include these exact Markdown sections:
 
 ## Summary

@@ -13,6 +13,7 @@
 | Latest git tag | `v4.0.0` |
 | Active task | Phase 6 Web UI deliverable complete; optional channels not started |
 | Runtime | CLI + FastAPI HTTP API + static Web UI, single-agent, Anthropic provider |
+| Domain instructions | `skills/*.md` and `policies/*.md` are injected into each run's system prompt |
 
 ## What is complete
 
@@ -21,6 +22,7 @@
 - **Phase 3** — FastAPI HTTP API (`POST /runs`, `GET /runs/{id}`, `GET /runs/{id}/trace`), SQLite run persistence, async background execution. See `docs/baselines/version3_phase3_baseline.md`.
 - **Phase 4** — `SearchBackend` Protocol, `NaiveBackend`, `SqliteFtsBackend` (FTS5), `search_knowledge` tool, pluggable config. See `docs/baselines/version4_phase4_baseline.md`.
 - **Phase 6 Web UI** — FastAPI-served static HTML UI at `GET /` that calls `POST /runs`, polls `GET /runs/{id}`, and renders final answers, status, token usage, and cost. See `docs/baselines/version6_phase6_web_ui_baseline.md`.
+- **Domain instruction injection** — Domain pack `skills/` and `policies/` Markdown files are loaded in deterministic order and included in the system prompt for every CLI, API, and Web UI run.
 
 ## What is next
 

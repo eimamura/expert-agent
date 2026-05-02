@@ -13,6 +13,10 @@ from runtime.config import (
     validate_config,
 )
 from runtime.cost import CostTracker, estimate_call_cost_usd
+from runtime.domain_instructions import (
+    load_domain_instruction_files,
+    render_domain_instructions,
+)
 from runtime.hashing import compute_input_hash, sha256_text, stable_json_dumps
 from runtime.ids import new_run_id
 from runtime.knowledge_loader import build_knowledge_index
@@ -46,22 +50,65 @@ def test_derived_knowledge_path_reads_domain_pack_markdown() -> None:
     assert "domain_overview.md" in index
 
 
-def test_input_hash_parts_use_domain_rule_and_knowledge_hashes() -> None:
+def test_domain_instruction_loader_reads_skills_then_policies() -> None:
+    config = load_config()
+    files = load_domain_instruction_files(domain_path(config))
+    assert [item["path"] for item in files] == [
+        "skills/investigation_skill.md",
+        "skills/report_generation_skill.md",
+        "skills/sql_diagnosis_skill.md",
+        "policies/db_safety.md",
+        "policies/production_change_policy.md",
+        "policies/response_policy.md",
+    ]
+    assert all(item["content"] for item in files)
+    assert all(item["bytes"] > 0 for item in files)
+    assert all(item["sha256"] for item in files)
+
+    rendered = render_domain_instructions(files)
+    assert "## Domain Skills" in rendered
+    assert "## Domain Policies" in rendered
+    assert "SQL Diagnosis Skill" in rendered
+    assert "Database Safety Policy" in rendered
+    assert "Production Change Policy" in rendered
+    assert "Response Policy" in rendered
+
+
+def test_domain_instruction_loader_treats_missing_directories_as_empty(tmp_path) -> None:
+    assert load_domain_instruction_files(tmp_path) == []
+    rendered = render_domain_instructions([])
+    assert "## Domain Skills" in rendered
+    assert "## Domain Policies" in rendered
+    assert rendered.count("No Markdown files found.") == 2
+
+
+def test_input_hash_parts_use_domain_rule_knowledge_and_instruction_hashes() -> None:
     config = load_config()
     snapshot = runtime_snapshot(config)
     _, knowledge_files = build_knowledge_index(knowledge_path(config))
+    domain_instruction_files = load_domain_instruction_files(domain_path(config))
     allowed_tables = load_allowed_tables(config)
     parts = build_input_hash_parts(
         question="What changed in monthly revenue?",
         config_snapshot=snapshot,
         knowledge_files=knowledge_files,
+        domain_instruction_files=domain_instruction_files,
         allowed_tables=allowed_tables,
     )
     expected_redaction_hash = sha256_text(domain_path(config, "rules", "redaction.yml").read_text(encoding="utf-8"))
     assert parts["redaction_config_hash"] == expected_redaction_hash
     assert "root" not in parts["config_snapshot"]["knowledge"]
     assert all("sha256" in item for item in parts["knowledge_files"])
+    assert all("sha256" in item for item in parts["domain_instruction_files"])
     assert compute_input_hash({**parts, "allowed_table_hash": "changed"}) != compute_input_hash(parts)
+    changed_instruction_parts = {
+        **parts,
+        "domain_instruction_files": [
+            *parts["domain_instruction_files"][:-1],
+            {**parts["domain_instruction_files"][-1], "sha256": "changed"},
+        ],
+    }
+    assert compute_input_hash(changed_instruction_parts) != compute_input_hash(parts)
 
 
 def test_config_validates_hard_limits() -> None:
@@ -90,6 +137,7 @@ def test_config_requires_safe_relative_domain_root() -> None:
 
 def test_prompt_has_exactly_one_knowledge_placeholder() -> None:
     assert SYSTEM_PROMPT_TEMPLATE.count("{KNOWLEDGE_INDEX}") == 1
+    assert SYSTEM_PROMPT_TEMPLATE.count("{DOMAIN_INSTRUCTIONS}") == 1
     assert "## Summary" in SYSTEM_PROMPT_TEMPLATE
 
 

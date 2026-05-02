@@ -5,6 +5,17 @@ The active implementation source is the split documentation set, starting from `
 
 ---
 
+## Unreleased
+
+Injected domain pack skills and policies into every run's system prompt.
+
+- Added deterministic loading for `domains/<domain>/skills/*.md` and `domains/<domain>/policies/*.md`.
+- Rendered domain instructions into the provider `system_prompt` under explicit skills and policies sections.
+- Added domain instruction path and content hashes to `input_hash` parts.
+- Added tests for loader ordering, missing directories, prompt injection, and hash sensitivity.
+
+---
+
 ## v6.0.0 - 2026-05-02
 
 Completed the Phase 6 Web UI channel adapter.

@@ -107,7 +107,7 @@ def new_run_id() -> str:
 Expected sequence:
 
 1. Build initial state.
-2. Build the system prompt from `SYSTEM_PROMPT_TEMPLATE` and the knowledge index.
+2. Build the system prompt from `SYSTEM_PROMPT_TEMPLATE`, domain skills and policies, and the knowledge index.
 3. Call the LLM.
 4. If the LLM requests a tool, validate and execute the tool.
 5. Redact tool output before appending it to LLM-visible state.
@@ -179,14 +179,17 @@ SYSTEM_PROMPT_TEMPLATE: str
 Rules:
 
 - The Phase 1 system prompt must be in English.
+- `{DOMAIN_INSTRUCTIONS}` must appear exactly once.
 - `{KNOWLEDGE_INDEX}` must appear exactly once.
 - Do not inject dynamic data through other ad hoc placeholders.
 - The template body is part of `input_hash`.
 - The rendered knowledge index is accounted for separately through knowledge file hashes.
+- The rendered domain instructions are accounted for separately through skills and policies file hashes.
 
 The prompt must tell the agent:
 
 - use tools when evidence is needed;
+- follow injected domain skills and policies;
 - do not invent table names;
 - do not use redacted values for value-level analysis;
 - include evidence and uncertainty;
@@ -201,6 +204,7 @@ It should include:
 - user question;
 - system prompt template;
 - knowledge file paths and content hashes;
+- domain instruction file paths and content hashes from `skills/*.md` and `policies/*.md`;
 - relevant config snapshot;
 - tool schema identifiers;
 - allowed table configuration hash;
@@ -242,6 +246,14 @@ Phase 1 uses naive retrieval:
 - derive the knowledge directory from `domain.root / "knowledge"`.
 
 No vector DB is used in Phase 1.
+
+Domain pack instructions are loaded separately from retrievable knowledge:
+
+- read `domain.root / "skills"/*.md` and `domain.root / "policies"/*.md`;
+- include only `.md` files;
+- treat missing `skills/` or `policies/` directories as empty;
+- load in deterministic order: all skills first, then all policies, with filenames sorted ascending within each directory;
+- inject the full rendered content into the system prompt under explicit `## Domain Skills` and `## Domain Policies` sections.
 
 ## `runtime/knowledge_loader.py`
 

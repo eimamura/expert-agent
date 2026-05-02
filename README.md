@@ -2,7 +2,7 @@
 
 Local-first domain expert AI agent MVP.
 
-This repository implements a local-first, single-agent, Markdown-centered expert assistant. It runs from a local CLI, a FastAPI HTTP service, or a minimal static Web UI, loads curated Markdown knowledge, uses parser-validated read-only SQL tools, redacts sensitive data before LLM input and trace persistence, and writes JSONL traces for each run.
+This repository implements a local-first, single-agent, Markdown-centered expert assistant. It runs from a local CLI, a FastAPI HTTP service, or a minimal static Web UI, loads curated Markdown knowledge, injects domain skills and policies into each run's system prompt, uses parser-validated read-only SQL tools, redacts sensitive data before LLM input and trace persistence, and writes JSONL traces for each run.
 
 ## Project Status
 
@@ -110,7 +110,7 @@ curl http://localhost:8000/runs/01J.../trace
 uv run pytest
 ```
 
-The tests cover config validation, knowledge loading, redaction, SQL safety, SQL wrappers, runtime loop behavior with provider doubles, trace writing, trace schema validation, trace replay, trace summaries, eval assertions, response formatting, run store operations, HTTP API endpoints, and Web UI static serving.
+The tests cover config validation, knowledge and domain instruction loading, redaction, SQL safety, SQL wrappers, runtime loop behavior with provider doubles, trace writing, trace schema validation, trace replay, trace summaries, eval assertions, response formatting, run store operations, HTTP API endpoints, and Web UI static serving.
 
 ## Repository Layout
 
@@ -147,6 +147,7 @@ Before making implementation changes:
 
 - Use read-only database credentials.
 - Only parser-validated single-statement `SELECT` queries are allowed.
+- Domain pack `skills/*.md` and `policies/*.md` are loaded deterministically and injected into the system prompt for every run.
 - Keep redaction before LLM input and before trace persistence.
 - Redact `question` and `final_answer` before storing in `runs.db`.
 - Do not add write SQL tools or an unrestricted SQL execution function.

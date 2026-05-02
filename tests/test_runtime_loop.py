@@ -30,6 +30,11 @@ def test_runtime_successful_final_answer_with_provider_double(tmp_path: Path) ->
     state = run_agent("Question?", _config(tmp_path), provider=provider, run_id="run-success")
     assert state.final_status == "success"
     assert "## Summary" in state.final_answer
+    system_prompt = provider.calls[0]["system_prompt"]
+    assert "## Domain Skills" in system_prompt
+    assert "SQL Diagnosis Skill" in system_prompt
+    assert "## Domain Policies" in system_prompt
+    assert "Database Safety Policy" in system_prompt
 
 
 def test_runtime_tool_flow_redacts_llm_visible_tool_output(tmp_path: Path) -> None:
