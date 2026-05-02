@@ -1,0 +1,3 @@
+{"id":"domain_001","question":"How is active customer count defined?","expected_tools":["read_knowledge_file"],"expected_response_sections":["Summary","Findings","Evidence"]}
+{"id":"domain_002","question":"What caveats affect monthly revenue analysis?","expected_tools":["read_knowledge_file"],"expected_response_sections":["Summary","Findings","Evidence","Risks / Uncertainty"]}
+{"id":"domain_003","question":"Which joins connect orders to products?","expected_tools":["read_knowledge_file"],"expected_response_sections":["Summary","Findings","Evidence"]}

@@ -1,0 +1,37 @@
+runtime:
+  max_steps: 8
+  max_total_tokens: 120000
+  max_output_tokens_per_call: 4096
+  max_run_cost_usd: 3.0
+  max_tool_result_bytes: 20000
+
+llm:
+  provider: "anthropic"
+  model_id: "sonnet_latest"
+  temperature: 0
+  model_aliases:
+    sonnet_latest: "claude-sonnet-4-5"
+
+database:
+  url_env: "DATABASE_URL"
+  dialect: "sqlite"
+  statement_timeout_seconds: 30
+  max_rows: 100
+  max_result_bytes: 20000
+
+knowledge:
+  root: "knowledge"
+  max_file_read_bytes: 200000
+
+trace:
+  dir: "traces"
+  output_sample_size: 5
+  output_sample_strategy: "head"
+
+pricing:
+  claude-sonnet-4-5:
+    input_per_million_usd: 3.0
+    output_per_million_usd: 15.0
+  sonnet_latest:
+    input_per_million_usd: 3.0
+    output_per_million_usd: 15.0

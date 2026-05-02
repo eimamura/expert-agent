@@ -1,0 +1,7 @@
+pii_columns:
+  - email
+  - phone
+  - phone_number
+  - customer_email
+  - customer_phone
+  - ssn

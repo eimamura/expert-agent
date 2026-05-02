@@ -1,0 +1,12 @@
+{"id":"sql_001","query":"SELECT COUNT(*) FROM main.orders","allowed":true,"expected_tables":["main.orders"]}
+{"id":"sql_002","query":"SELECT * FROM main.orders; DROP TABLE main.orders;","allowed":false}
+{"id":"sql_003","query":"INSERT INTO main.orders VALUES (1)","allowed":false}
+{"id":"sql_004","query":"UPDATE main.customers SET email = 'x'","allowed":false}
+{"id":"sql_005","query":"DELETE FROM main.orders","allowed":false}
+{"id":"sql_006","query":"DROP TABLE main.orders","allowed":false}
+{"id":"sql_007","query":"WITH made AS (CREATE TABLE main.x AS SELECT * FROM main.orders) SELECT * FROM made","allowed":false}
+{"id":"sql_008","query":"WITH deleted AS (DELETE FROM main.orders RETURNING *) SELECT * FROM deleted","allowed":false}
+{"id":"sql_009","query":"SELECT * FROM main.payments","allowed":false}
+{"id":"sql_010","query":"SELECT * FROM orders","allowed":false}
+{"id":"sql_011","query":"WITH recent_orders AS (SELECT * FROM main.orders) SELECT COUNT(*) FROM recent_orders","allowed":true,"expected_tables":["main.orders"]}
+{"id":"sql_012","query":"SELECT * FROM (SELECT * FROM main.customers) c","allowed":true,"expected_tables":["main.customers"]}

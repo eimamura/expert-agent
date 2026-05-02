@@ -25,26 +25,26 @@ This file is Phase 1 only. Do not add Phase 2 or later work here.
 
 ## Progress
 
-- [ ] Step 0: Project baseline
-- [ ] Step 1: Directory skeleton
-- [ ] Step 2: Phase 0 knowledge files
-- [ ] Step 3: Rules and eval seeds
-- [ ] Step 4: Runtime config
-- [ ] Step 5: Prompt contract
-- [ ] Step 6: Run IDs
-- [ ] Step 7: Input hashing
-- [ ] Step 8: Cost tracking
-- [ ] Step 9: Redaction
-- [ ] Step 10: Knowledge loader
-- [ ] Step 11: SQL safety
-- [ ] Step 12: SQL execution wrapper
-- [ ] Step 13: Trace writer
-- [ ] Step 14: Agent loop
-- [ ] Step 15: CLI
-- [ ] Step 16: Output formatter
-- [ ] Step 17: Eval runner
-- [ ] Step 18: Test completion pass
-- [ ] Step 19: Final verification
+- [x] Step 0: Project baseline
+- [x] Step 1: Directory skeleton
+- [x] Step 2: Phase 0 knowledge files
+- [x] Step 3: Rules and eval seeds
+- [x] Step 4: Runtime config
+- [x] Step 5: Prompt contract
+- [x] Step 6: Run IDs
+- [x] Step 7: Input hashing
+- [x] Step 8: Cost tracking
+- [x] Step 9: Redaction
+- [x] Step 10: Knowledge loader
+- [x] Step 11: SQL safety
+- [x] Step 12: SQL execution wrapper
+- [x] Step 13: Trace writer
+- [x] Step 14: Agent loop
+- [x] Step 15: CLI
+- [x] Step 16: Output formatter
+- [x] Step 17: Eval runner
+- [x] Step 18: Test completion pass
+- [x] Step 19: Final verification
 
 ## Step 0: Project baseline
 

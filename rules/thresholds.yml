@@ -1,0 +1,4 @@
+thresholds:
+  active_customer_drop_pct_attention: 10
+  revenue_drop_pct_attention: 10
+  max_missing_status_pct: 5

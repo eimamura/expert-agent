@@ -1,0 +1,2 @@
+{"id":"seed_001","question":"Explain the trend in active customers.","expected_tools":["read_knowledge_file"],"forbidden_tools":["run_write_sql"],"expected_response_sections":["Summary","Findings","Evidence","Risks / Uncertainty"]}
+{"id":"seed_002","question":"Which tables support monthly revenue analysis?","expected_tools":["read_knowledge_file"],"forbidden_tools":["execute_any_sql"],"expected_response_sections":["Summary","Findings","Evidence"]}
