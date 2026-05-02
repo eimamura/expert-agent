@@ -1,2 +1,4 @@
 _archive/
-
+.env
+.env.*
+!.env.example
