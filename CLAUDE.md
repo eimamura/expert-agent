@@ -14,6 +14,7 @@
 - Preserve redaction before LLM input.
 - Preserve redaction before trace persistence.
 - Use read-only DB access assumptions.
+- Use `sqlite3` CLI for local SQLite inspection when available, and avoid printing PII values in command output.
 - Keep changes scoped to the requested step.
 - Run pytest before declaring done.
 - Treat `IMPLEMENTATION_PLAN.md` as the current execution state.

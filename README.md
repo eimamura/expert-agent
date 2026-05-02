@@ -36,6 +36,7 @@ Then read the topic-specific `docs/*.md` file for the area being changed. `CLAUD
 
 - Python 3.10+
 - `uv`
+- `sqlite3` CLI for inspecting the optional local SQLite database
 - Anthropic API key for real agent runs
 - Optional local database configured through `DATABASE_URL`
 
@@ -60,6 +61,13 @@ uv run python scripts/create_local_sqlite.py
 ```
 
 This creates `data/local.sqlite`, matching the `DATABASE_URL=sqlite:///./data/local.sqlite` value in `.env.example`. Re-run with `--force` only when you intentionally want to replace the local seed database.
+
+Confirm the seed database has data:
+
+```bash
+sqlite3 data/local.sqlite ".tables"
+sqlite3 data/local.sqlite "SELECT 'customers', COUNT(*) FROM customers UNION ALL SELECT 'orders', COUNT(*) FROM orders UNION ALL SELECT 'order_items', COUNT(*) FROM order_items UNION ALL SELECT 'products', COUNT(*) FROM products;"
+```
 
 ## Run
 
