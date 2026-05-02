@@ -13,6 +13,7 @@ Completed the Phase 6 Web UI channel adapter.
 - Added `app/static/index.html` as a vanilla HTML/JS UI that uses `POST /runs` and polls `GET /runs/{run_id}`.
 - Added API coverage for static Web UI serving.
 - Updated current-state and Phase 6 plan documentation.
+- Added `docs/baselines/version6_phase6_web_ui_baseline.md`.
 
 ---
 

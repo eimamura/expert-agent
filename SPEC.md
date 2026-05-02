@@ -25,6 +25,7 @@ Read topic-specific documents as needed:
 - Eval / pytest strategy: `docs/06_eval_strategy.md`
 - Future scaling: `docs/07_future_scaling.md`
 - Version 1 Phase 1 baseline: `docs/baselines/version1_phase1_baseline.md`
+- Version 6 Phase 6 Web UI baseline: `docs/baselines/version6_phase6_web_ui_baseline.md`
 - Phase 1 history: `docs/phase_plans/phase1_implementation_plan.md`
 - Phase 2 completion summary: `docs/phase_plans/phase2_implementation_plan.md`
 

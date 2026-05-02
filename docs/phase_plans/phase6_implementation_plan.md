@@ -96,8 +96,8 @@ A minimal single-page chat UI served by FastAPI as a static file. Tech: plain HT
 - `app/static/index.html` — single-page vanilla HTML/JS UI that submits to `POST /runs`, polls `GET /runs/{run_id}`, renders Markdown with marked.js, and displays status, token usage, and cost.
 - `tests/test_api.py` — covers the static HTML route and preserves existing `/runs` initialization behavior coverage.
 - `docs/CURRENT_STATE.md` — records Phase 6 Web UI completion status.
+- `docs/baselines/version6_phase6_web_ui_baseline.md` — records the Phase 6 Web UI completion baseline.
 
 **Deviations from plan:**
-- No Phase 6 baseline snapshot was added, so `docs/baselines/README.md` was not changed.
 - Slack and scheduled report adapters remain optional and out of scope for this Web UI deliverable.
 - Phase 6 starts from the current HTTP API baseline because Phase 5 was skipped by ADR-0005.

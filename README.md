@@ -12,7 +12,7 @@ This repository implements a local-first, single-agent, Markdown-centered expert
 | Phase 2 — Trace, eval, runtime refinement | Complete | `docs/baselines/version2_phase2_baseline.md` |
 | Phase 3 — HTTP API and run persistence | Complete | `docs/baselines/version3_phase3_baseline.md` |
 | Phase 4 — SQLite FTS knowledge search | Complete | `docs/baselines/version4_phase4_baseline.md` |
-| Phase 6 — Web UI channel adapter | Web UI complete | `docs/phase_plans/phase6_implementation_plan.md` |
+| Phase 6 — Web UI channel adapter | Web UI complete | `docs/baselines/version6_phase6_web_ui_baseline.md` |
 
 The current scope intentionally excludes LangGraph, multi-agent orchestration, write SQL tools, unrestricted SQL execution, production mutations, and optional Phase 6 channels such as Slack and scheduled reports unless explicitly requested.
 
