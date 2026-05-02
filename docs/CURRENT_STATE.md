@@ -34,7 +34,10 @@
 | Goal | Where to look |
 | --- | --- |
 | Understand the current architecture | `docs/baselines/version3_phase3_baseline.md` |
-| Write new code for Phase 4 | `docs/phase_plans/phase4_implementation_plan.md` (to be created) |
+| Write new code for Phase 4 | `docs/phase_plans/phase4_implementation_plan.md` |
+| Plan for Phase 5 (LangGraph) | `docs/phase_plans/phase5_implementation_plan.md` |
+| Plan for Phase 6 (Web UI / channels) | `docs/phase_plans/phase6_implementation_plan.md` |
+| Plan for Phase 7 (agent platform) | `docs/phase_plans/phase7_implementation_plan.md` |
 | Understand why domains/ exists | `docs/decisions/ADR-0001-domain-packs.md` |
 | Understand why LangGraph is excluded | `docs/decisions/ADR-0002-no-langgraph-until-phase5.md` |
 | Understand why write SQL is excluded | `docs/decisions/ADR-0003-read-only-sql.md` |
