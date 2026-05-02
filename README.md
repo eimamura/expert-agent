@@ -2,7 +2,7 @@
 
 Local-first domain expert AI agent MVP.
 
-This repository implements a local-first, single-agent, Markdown-centered expert assistant. It runs from a local CLI or a FastAPI HTTP service, loads curated Markdown knowledge, uses parser-validated read-only SQL tools, redacts sensitive data before LLM input and trace persistence, and writes JSONL traces for each run.
+This repository implements a local-first, single-agent, Markdown-centered expert assistant. It runs from a local CLI, a FastAPI HTTP service, or a minimal static Web UI, loads curated Markdown knowledge, uses parser-validated read-only SQL tools, redacts sensitive data before LLM input and trace persistence, and writes JSONL traces for each run.
 
 ## Project Status
 
@@ -11,8 +11,10 @@ This repository implements a local-first, single-agent, Markdown-centered expert
 | Phase 1 — CLI MVP | Complete | `docs/baselines/version1_phase1_baseline.md` |
 | Phase 2 — Trace, eval, runtime refinement | Complete | `docs/baselines/version2_phase2_baseline.md` |
 | Phase 3 — HTTP API and run persistence | Complete | `docs/baselines/version3_phase3_baseline.md` |
+| Phase 4 — SQLite FTS knowledge search | Complete | `docs/baselines/version4_phase4_baseline.md` |
+| Phase 6 — Web UI channel adapter | Web UI complete | `docs/phase_plans/phase6_implementation_plan.md` |
 
-The current scope intentionally excludes Web UI, LangGraph, multi-agent orchestration, vector search, write SQL tools, unrestricted SQL execution, and production mutations.
+The current scope intentionally excludes LangGraph, multi-agent orchestration, write SQL tools, unrestricted SQL execution, production mutations, and optional Phase 6 channels such as Slack and scheduled reports unless explicitly requested.
 
 ## Requirements
 
@@ -78,10 +80,13 @@ For development with auto-reload:
 uv run uvicorn app.api:app --reload
 ```
 
+Open `http://localhost:8000/` in a browser to use the static Web UI. The UI is a thin channel adapter: it submits questions through `POST /runs`, polls `GET /runs/{run_id}`, and renders the stored final answer, status, token usage, and cost.
+
 ### Endpoints
 
 | Method | Path | Description |
 | --- | --- | --- |
+| `GET` | `/` | Static Web UI. |
 | `POST` | `/runs` | Create a run. Returns `{run_id, status}` with HTTP 202. Agent executes in the background. |
 | `GET` | `/runs/{run_id}` | Run status, token usage, cost, and final answer. |
 | `GET` | `/runs/{run_id}/trace` | Validated JSONL trace events as JSON. |
@@ -105,13 +110,13 @@ curl http://localhost:8000/runs/01J.../trace
 uv run pytest
 ```
 
-The tests cover config validation, knowledge loading, redaction, SQL safety, SQL wrappers, runtime loop behavior with provider doubles, trace writing, trace schema validation, trace replay, trace summaries, eval assertions, response formatting, run store operations, and HTTP API endpoints.
+The tests cover config validation, knowledge loading, redaction, SQL safety, SQL wrappers, runtime loop behavior with provider doubles, trace writing, trace schema validation, trace replay, trace summaries, eval assertions, response formatting, run store operations, HTTP API endpoints, and Web UI static serving.
 
 ## Repository Layout
 
 ```text
 agents/     Prompt contract and agent-facing instructions
-app/        CLI entry point (main.py) and HTTP API (api.py)
+app/        CLI entry point (main.py), HTTP API (api.py), and static Web UI
 config/     Runtime configuration
 domains/    Domain packs with knowledge, skills, policies, rules, and evals
 docs/       Detailed project specification by topic

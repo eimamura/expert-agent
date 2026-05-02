@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expert Agent</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f7f6;
+    --surface: #ffffff;
+    --surface-2: #edf3f0;
+    --border: #c8d4ce;
+    --accent: #217c6b;
+    --accent-dim: #175d51;
+    --text: #1b2421;
+    --text-muted: #62716b;
+    --answer-bg: #fbfdfc;
+    --error: #b94a56;
+    --success: #217c6b;
+    --radius: 8px;
+    --font: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 4rem;
+    gap: 2rem;
+  }
+
+  header {
+    text-align: center;
+    padding-top: 1rem;
+  }
+
+  header h1 {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--text);
+  }
+
+  header p {
+    margin-top: 0.4rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  .chat-wrap {
+    width: 100%;
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+  }
+
+  textarea {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    padding: 0.75rem 1rem;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  textarea:focus { border-color: var(--accent-dim); }
+  textarea::placeholder { color: var(--text-muted); }
+
+  .form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  button[type="submit"] {
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.55rem 1.4rem;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  button[type="submit"]:hover:not(:disabled) { opacity: 0.88; }
+  button[type="submit"]:active:not(:disabled) { transform: scale(0.97); }
+  button[type="submit"]:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  #status-line {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .result-card {
+    background: var(--answer-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .result-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .result-card-header .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .result-card-header .meta {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-family: var(--mono);
+  }
+
+  .answer-body {
+    padding: 1.25rem 1.5rem;
+    font-size: 0.93rem;
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .answer-body h1, .answer-body h2, .answer-body h3 {
+    color: var(--text);
+    margin: 1.1em 0 0.4em;
+    font-weight: 600;
+  }
+
+  .answer-body h1 { font-size: 1.3em; }
+  .answer-body h2 { font-size: 1.15em; }
+  .answer-body h3 { font-size: 1em; }
+
+  .answer-body p { margin: 0.6em 0; }
+
+  .answer-body code {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 0.85em;
+    padding: 0.15em 0.4em;
+  }
+
+  .answer-body pre {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow-x: auto;
+    padding: 1rem 1.25rem;
+    margin: 0.75em 0;
+  }
+
+  .answer-body pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.875em;
+    line-height: 1.6;
+  }
+
+  .answer-body ul, .answer-body ol {
+    padding-left: 1.5rem;
+    margin: 0.5em 0;
+  }
+
+  .answer-body li { margin: 0.25em 0; }
+
+  .answer-body table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.75em 0;
+    font-size: 0.88em;
+  }
+
+  .answer-body th, .answer-body td {
+    border: 1px solid var(--border);
+    padding: 0.4em 0.75em;
+    text-align: left;
+  }
+
+  .answer-body th {
+    background: var(--surface);
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .answer-body blockquote {
+    border-left: 3px solid var(--accent-dim);
+    color: var(--text-muted);
+    margin: 0.75em 0;
+    padding: 0.25em 1em;
+  }
+
+  .pulse {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 1.2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.75); }
+  }
+
+  .status-running {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 1rem 1.25rem;
+  }
+
+  .badge {
+    display: inline-block;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    padding: 0.15em 0.5em;
+    text-transform: uppercase;
+  }
+
+  .badge-success { background: rgba(76, 175, 132, 0.15); color: var(--success); }
+  .badge-error   { background: rgba(224,  92, 106, 0.15); color: var(--error); }
+  .badge-timeout { background: rgba(255, 165,   0, 0.15); color: #f5a623; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Expert Agent</h1>
+  <p>Subscription commerce domain assistant</p>
+</header>
+
+<div class="chat-wrap">
+  <form id="ask-form">
+    <textarea id="question" placeholder="Ask a question about billing, subscriptions, or customer data…" rows="3"></textarea>
+    <div class="form-row">
+      <span id="status-line"></span>
+      <button type="submit" id="submit-btn">Ask</button>
+    </div>
+  </form>
+
+  <div id="result"></div>
+</div>
+
+<script>
+const form      = document.getElementById('ask-form');
+const textarea  = document.getElementById('question');
+const submitBtn = document.getElementById('submit-btn');
+const statusEl  = document.getElementById('status-line');
+const resultEl  = document.getElementById('result');
+
+const TERMINAL = new Set(['success', 'max_steps_exceeded', 'budget_exceeded',
+                          'timeout_error', 'tool_error', 'llm_error',
+                          'validation_error']);
+
+function setStatus(msg) { statusEl.textContent = msg; }
+
+function formatMeta(run) {
+  const parts = [];
+  if (run.total_input_tokens != null || run.total_output_tokens != null) {
+    const tok = (Number(run.total_input_tokens ?? 0) + Number(run.total_output_tokens ?? 0)).toLocaleString();
+    parts.push(`${tok} tokens`);
+  }
+  if (run.total_cost_usd != null) {
+    parts.push(`$${Number(run.total_cost_usd).toFixed(4)}`);
+  }
+  if (run.run_id) parts.push(run.run_id.slice(-8));
+  return parts.join(' · ');
+}
+
+function errorText(payload, fallback) {
+  if (!payload) return fallback;
+  if (typeof payload.detail === 'string') return payload.detail;
+  if (Array.isArray(payload.detail)) {
+    return payload.detail.map(item => item.msg ?? JSON.stringify(item)).join('; ');
+  }
+  if (payload.detail) return JSON.stringify(payload.detail);
+  return fallback;
+}
+
+function badgeFor(status) {
+  if (status === 'success') return '<span class="badge badge-success">success</span>';
+  if (status && status.includes('timeout')) return '<span class="badge badge-timeout">timeout</span>';
+  return `<span class="badge badge-error">${status ?? 'error'}</span>`;
+}
+
+function renderRunning() {
+  resultEl.innerHTML = `
+    <div class="result-card">
+      <div class="status-running">
+        <span class="pulse"></span>
+        Running&hellip;
+      </div>
+    </div>`;
+}
+
+function renderResult(run) {
+  const answer = run.final_answer ?? run.error_message ?? 'No answer returned.';
+  const html = marked.parse(answer);
+  resultEl.innerHTML = `
+    <div class="result-card">
+      <div class="result-card-header">
+        <span class="label">${badgeFor(run.status)} Answer</span>
+        <span class="meta">${formatMeta(run)}</span>
+      </div>
+      <div class="answer-body">${html}</div>
+    </div>`;
+}
+
+async function poll(runId) {
+  const INTERVAL = 1500;
+  const MAX_WAIT = 300_000;
+  const deadline = Date.now() + MAX_WAIT;
+
+  while (Date.now() < deadline) {
+    await new Promise(r => setTimeout(r, INTERVAL));
+    try {
+      const res = await fetch(`/runs/${runId}`);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setStatus(`Poll error ${res.status}: ${errorText(err, 'unknown')}`);
+        continue;
+      }
+      const run = await res.json();
+      setStatus(`status: ${run.status}`);
+      if (TERMINAL.has(run.status)) {
+        renderResult(run);
+        return;
+      }
+    } catch (e) {
+      setStatus('Network error, retrying…');
+    }
+  }
+  setStatus('Timed out waiting for result.');
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const question = textarea.value.trim();
+  if (!question) return;
+
+  submitBtn.disabled = true;
+  resultEl.innerHTML = '';
+  setStatus('Submitting…');
+  renderRunning();
+
+  try {
+    const res = await fetch('/runs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      setStatus(`Error ${res.status}: ${errorText(err, 'unknown')}`);
+      resultEl.innerHTML = '';
+      return;
+    }
+
+    const { run_id } = await res.json();
+    setStatus(`queued · ${run_id.slice(-8)}`);
+    await poll(run_id);
+  } catch (err) {
+    setStatus(`Request failed: ${err.message}`);
+    resultEl.innerHTML = '';
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+
+textarea.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') form.requestSubmit();
+});
+</script>
+</body>
+</html>

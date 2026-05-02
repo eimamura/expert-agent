@@ -1,7 +1,7 @@
 # docs/CURRENT_STATE.md
 
 **Last Updated:** 2026-05-02
-**Current Phase:** Phase 4 (Complete)
+**Current Phase:** Phase 6 Web UI (Complete)
 
 ---
 
@@ -11,8 +11,8 @@
 | --- | --- |
 | Stable baseline | `docs/baselines/version4_phase4_baseline.md` |
 | Latest git tag | `v4.0.0` |
-| Active task | `docs/phase_plans/phase6_implementation_plan.md` (Web UI — channel adapter) |
-| Runtime | CLI + FastAPI HTTP API, single-agent, Anthropic provider |
+| Active task | Phase 6 Web UI deliverable complete; optional channels not started |
+| Runtime | CLI + FastAPI HTTP API + static Web UI, single-agent, Anthropic provider |
 
 ## What is complete
 
@@ -20,15 +20,16 @@
 - **Phase 2** — Trace schema validation, provider test doubles, eval assertions, normalized error metadata. See `docs/baselines/version2_phase2_baseline.md`.
 - **Phase 3** — FastAPI HTTP API (`POST /runs`, `GET /runs/{id}`, `GET /runs/{id}/trace`), SQLite run persistence, async background execution. See `docs/baselines/version3_phase3_baseline.md`.
 - **Phase 4** — `SearchBackend` Protocol, `NaiveBackend`, `SqliteFtsBackend` (FTS5), `search_knowledge` tool, pluggable config. See `docs/baselines/version4_phase4_baseline.md`.
+- **Phase 6 Web UI** — FastAPI-served static HTML UI at `GET /` that calls `POST /runs`, polls `GET /runs/{id}`, and renders final answers, status, token usage, and cost. See `docs/phase_plans/phase6_implementation_plan.md`.
 
 ## What is next
 
-**Phase 6: Web UI** (`docs/phase_plans/phase6_implementation_plan.md`)
+**Phase 6 optional channels or Phase 7 planning**
 
-- Minimal HTML + vanilla JS chat UI served by FastAPI
-- Channels call `POST /runs` → poll `GET /runs/{id}` → render answer
+- Optional Slack and scheduled report adapters remain unimplemented.
+- Phase 7 platform work remains provisional until operational needs are clear.
 - Phase 5 (LangGraph) skipped — trigger conditions not yet met. See `docs/decisions/ADR-0005-skip-phase5-langgraph.md`.
-- Phase 4 (SQLite FTS) also deferred — knowledge base still small enough for naive retrieval.
+- External search beyond local SQLite FTS remains deferred until operational need is clear.
 
 ## Routing
 
@@ -51,7 +52,7 @@ Do NOT implement unless explicitly requested:
 
 - LangGraph or any workflow orchestration engine
 - Multi-agent orchestration
-- Web UI
+- Slack bot or scheduled report channels
 - Write / UPDATE / DELETE SQL tools
 - `execute_any_sql` or equivalent unrestricted tool
 - Vector database or external search infrastructure

@@ -4,11 +4,13 @@
 
 This document is the implementation plan for Phase 6: multiple channel integrations.
 
-Phase 6 starts from the Phase 5 baseline once Phase 5 is released.
+Phase 6 starts from the current HTTP API baseline. Phase 5 was intentionally
+skipped because the trigger conditions for LangGraph were not met.
 
 ## Status
 
-Phase 6 is not started.
+Phase 6 Web UI deliverable is complete. Optional Slack and scheduled report
+adapters are not started.
 
 ## Objective
 
@@ -65,14 +67,14 @@ A minimal single-page chat UI served by FastAPI as a static file. Tech: plain HT
 
 ## Completion checklist
 
-- [ ] Step 1: Add `GET /` route to `app/api.py` serving `app/static/index.html`.
-- [ ] Step 2: Create `app/static/index.html` — minimal chat UI (HTML + vanilla JS).
-- [ ] Step 3: Wire polling logic: `POST /runs` → poll `GET /runs/{id}` → display answer.
-- [ ] Step 4: Add Markdown rendering (marked.js CDN or equivalent).
+- [x] Step 1: Add `GET /` route to `app/api.py` serving `app/static/index.html`.
+- [x] Step 2: Create `app/static/index.html` — minimal chat UI (HTML + vanilla JS).
+- [x] Step 3: Wire polling logic: `POST /runs` → poll `GET /runs/{id}` → display answer.
+- [x] Step 4: Add Markdown rendering (marked.js CDN or equivalent).
 - [ ] Step 5: (Optional) Slack adapter in `app/channels/slack.py` using Slack Bolt SDK.
 - [ ] Step 6: (Optional) Scheduled report runner in `app/channels/scheduler.py`.
-- [ ] Step 7: Write tests for the Web UI route and static file serving.
-- [ ] Step 8: Update `docs/CURRENT_STATE.md`, `docs/baselines/README.md`, and this file.
+- [x] Step 7: Write tests for the Web UI route and static file serving.
+- [x] Step 8: Update `docs/CURRENT_STATE.md` and this file.
 
 ---
 
@@ -87,10 +89,15 @@ A minimal single-page chat UI served by FastAPI as a static file. Tech: plain HT
 
 ## Implementation Result
 
-**Status:** Pending
+**Status:** Web UI complete
 
 **Implemented files:**
-- (To be filled on completion)
+- `app/api.py` — adds `GET /` serving the static Web UI from `app/static/index.html`.
+- `app/static/index.html` — single-page vanilla HTML/JS UI that submits to `POST /runs`, polls `GET /runs/{run_id}`, renders Markdown with marked.js, and displays status, token usage, and cost.
+- `tests/test_api.py` — covers the static HTML route and preserves existing `/runs` initialization behavior coverage.
+- `docs/CURRENT_STATE.md` — records Phase 6 Web UI completion status.
 
 **Deviations from plan:**
-- (To be filled on completion)
+- No Phase 6 baseline snapshot was added, so `docs/baselines/README.md` was not changed.
+- Slack and scheduled report adapters remain optional and out of scope for this Web UI deliverable.
+- Phase 6 starts from the current HTTP API baseline because Phase 5 was skipped by ADR-0005.

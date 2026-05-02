@@ -50,7 +50,7 @@ Read topic-specific documents as needed:
 
 ## Current baseline
 
-Phase 2 trace, eval, and runtime refinement are complete.
+Phase 4 SQLite FTS knowledge search is complete, and the Phase 6 Web UI channel adapter is complete.
 
 ## Must follow
 
@@ -68,15 +68,15 @@ Phase 2 trace, eval, and runtime refinement are complete.
 - Save trace as JSONL per run.
 - Save `input_hash` for run-condition tracking.
 - Enforce max step, max token, and max cost limits.
+- Keep channel adapters thin: Web UI and future channels must use the HTTP API instead of calling `run_agent()` directly.
 - Run pytest before declaring implementation complete.
 
 ## Still out of scope
 
 - LangGraph.
 - Multi-agent orchestration.
-- Web UI.
-- HTTP API.
-- Vector DB or external search infrastructure.
+- Vector databases or external search services.
+- Slack bot and scheduled report channels unless explicitly requested.
 - Write SQL tools.
 - `execute_any_sql`.
 - Production DB updates.

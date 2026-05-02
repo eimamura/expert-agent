@@ -5,6 +5,17 @@ The active implementation source is the split documentation set, starting from `
 
 ---
 
+## v6.0.0 - 2026-05-02
+
+Completed the Phase 6 Web UI channel adapter.
+
+- Added `GET /` in `app/api.py` to serve the static Web UI.
+- Added `app/static/index.html` as a vanilla HTML/JS UI that uses `POST /runs` and polls `GET /runs/{run_id}`.
+- Added API coverage for static Web UI serving.
+- Updated current-state and Phase 6 plan documentation.
+
+---
+
 ## v3.10 - 2026-05-02
 
 Fixed trace JSONL field ordering: `timestamp` is now the first key in every event.

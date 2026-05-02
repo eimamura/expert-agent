@@ -8,6 +8,7 @@ from typing import Any
 from contextlib import asynccontextmanager
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from app.main import load_dotenv
@@ -25,7 +26,10 @@ async def _lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Expert Agent API", version="3.0.0", lifespan=_lifespan)
+app = FastAPI(title="Expert Agent API", version="6.0.0", lifespan=_lifespan)
+
+_STATIC_DIR = Path(__file__).parent / "static"
+_STATIC_INDEX = _STATIC_DIR / "index.html"
 
 _config: dict[str, Any] = {}
 _run_store: RunStore | None = None
@@ -88,6 +92,13 @@ class CreateRunRequest(BaseModel):
 class CreateRunResponse(BaseModel):
     run_id: str
     status: str
+
+
+@app.get("/", response_class=FileResponse)
+async def index() -> FileResponse:
+    if not _STATIC_INDEX.exists():
+        raise HTTPException(status_code=404, detail="Static UI not found")
+    return FileResponse(_STATIC_INDEX, media_type="text/html")
 
 
 @app.post("/runs", response_model=CreateRunResponse, status_code=202)

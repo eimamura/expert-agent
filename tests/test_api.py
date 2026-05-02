@@ -46,6 +46,14 @@ def test_create_run_returns_202(client):
     assert data["status"] == "queued"
 
 
+def test_get_index_returns_static_html(client):
+    resp = client.get("/")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("text/html")
+    assert "<title>Expert Agent</title>" in resp.text
+    assert "fetch('/runs'" in resp.text
+
+
 def test_create_run_persists_to_store(client, store):
     resp = client.post("/runs", json={"question": "What is MRR?"})
     run_id = resp.json()["run_id"]
