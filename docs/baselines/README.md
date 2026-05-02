@@ -9,5 +9,6 @@ This directory contains versioned baseline snapshots for completed implementatio
 | Baseline | File | Role |
 | --- | --- | --- |
 | Version 1 Phase 1 | `version1_phase1_baseline.md` | Completed Phase 1 comparison snapshot used by later phases. |
+| Version 2 Phase 2 | `version2_phase2_baseline.md` | Completed Phase 2 comparison snapshot (trace, eval, runtime refinement) used by later phases. |
 
 Baseline files are historical records. Use the topic-specific `docs/*.md` files and current phase summaries for active implementation guidance.
