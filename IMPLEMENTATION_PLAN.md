@@ -57,7 +57,7 @@ Work:
 
 - Create `pyproject.toml`.
 - Require Python 3.10+.
-- Use `uv` or `poetry`.
+- Use `uv`.
 - Commit the generated lock file.
 - Create `.env.example`.
 
@@ -107,6 +107,9 @@ Work:
 - Create `rules/redaction.yml`.
 - Create `rules/pii_columns.yml`.
 - Create `evals/seed_questions.jsonl`.
+- Create `evals/sql_safety_cases.jsonl`.
+- Create `evals/domain_cases.jsonl`.
+- Create `evals/response_format_cases.jsonl`.
 
 ## Step 4: Runtime config
 
@@ -198,9 +201,12 @@ Work:
 - Implement `runtime/knowledge_loader.py`.
 - Implement `list_knowledge_files()`.
 - Implement `read_knowledge_file()`.
+- Build a short Markdown knowledge index for prompt insertion.
+- Include file paths, previews, byte sizes, and content hashes in the index source data.
 - Prevent path traversal.
 - Reject absolute paths.
 - Enforce maximum file-read size.
+- Add knowledge-loader and path-security tests.
 
 ## Step 11: SQL safety
 
@@ -211,12 +217,15 @@ References:
 Work:
 
 - Implement `tools/sql.py`.
+- Implement `validate_readonly_sql()`.
+- Implement `extract_tables()`.
 - Support configured SQL dialects.
 - Use parser-backed SELECT-only validation.
 - Reject destructive AST nodes.
 - Validate referenced tables against `rules/allowed_tables.yml`.
 - Do not misclassify CTE names as physical tables.
 - Reject schema-less table references in Phase 1.
+- Add SQL validation and table-extraction tests.
 
 ## Step 12: SQL execution wrapper
 
@@ -228,9 +237,14 @@ References:
 Work:
 
 - Assume read-only DB credentials.
+- Implement `list_tables()`.
+- Implement `get_table_schema()`.
+- Implement `run_readonly_sql()`.
 - Apply statement timeout settings.
 - Enforce row and result-size limits.
 - Redact SQL results before passing them to the LLM.
+- Return useful metadata for trace events.
+- Add SQL tool wrapper tests.
 
 ## Step 13: Trace writer
 
@@ -242,9 +256,16 @@ Work:
 
 - Implement `runtime/trace.py`.
 - Write `traces/{run_id}.jsonl`.
-- Include `schema_version`.
+- Include common event fields: `schema_version`, `run_id`, `parent_run_id`, `event_type`, and `timestamp`.
+- Emit `parent_run_id` as null in Phase 1.
+- Use UTC ISO 8601 timestamps with at least millisecond precision.
 - Support `run_started`, `llm_call`, `tool_call`, and `run_finished`.
+- Include required per-event fields for each supported event type.
+- Enforce the defined `run_finished.status` enum.
+- Include token and cost fields for LLM calls and run completion.
+- Include redacted tool arguments, redacted output samples, output sample strategy, output sample size, redacted columns, status, and error for tool calls.
 - Redact events before writing them.
+- Add trace schema and trace redaction tests.
 
 ## Step 14: Agent loop
 
@@ -259,6 +280,7 @@ Work:
 - Implement `runtime/loop.py`.
 - Implement `runtime/state.py`.
 - Build the minimal LLM -> tool -> LLM loop.
+- Insert the rendered knowledge index into `SYSTEM_PROMPT_TEMPLATE`.
 - Stop at max step.
 - Stop when token or cost limits are exceeded.
 - Truncate oversized tool results.
@@ -292,6 +314,7 @@ Work:
   - SQL / Tool Calls Used
   - Risks / Uncertainty
   - Recommended Next Actions
+- Add response-format tests.
 
 ## Step 17: Eval runner
 
@@ -303,9 +326,14 @@ Work:
 
 - Implement `tests/test_eval_runner.py`.
 - Load JSONL eval cases.
+- Validate `evals/seed_questions.jsonl`.
+- Validate `evals/sql_safety_cases.jsonl`.
+- Validate `evals/domain_cases.jsonl`.
+- Validate `evals/response_format_cases.jsonl`.
 - Support SQL safety cases.
 - Support domain cases.
 - Support response-format cases.
+- Avoid requiring live LLM calls by default.
 
 ## Step 18: Test completion pass
 
@@ -335,4 +363,3 @@ Work:
 - Confirm the Phase 1 completion criteria.
 - Confirm Phase 1 non-goals were not implemented.
 - Update `CHANGELOG.md` if the specification changes.
-
