@@ -4,6 +4,23 @@ Local-first domain expert AI agent MVP.
 
 This repository implements a local-first, single-agent, Markdown-centered expert assistant. It runs from a local CLI, a FastAPI HTTP service, or a minimal static Web UI, loads curated Markdown knowledge, injects domain skills and policies into each run's system prompt, uses parser-validated read-only SQL tools, redacts sensitive data before LLM input and trace persistence, and writes JSONL traces for each run.
 
+## Overview
+
+`expert-agent` is a small, auditable foundation for building domain expert assistants. A domain pack provides Markdown knowledge, operational skills, response policies, safety rules, eval cases, and approved database access rules. The runtime combines those files with a single agent loop so users can ask domain questions, inspect evidence, run safe read-only SQL, and receive structured answers with traceable provenance.
+
+The default domain pack models a subscription commerce business. It can answer operational questions about revenue, churn, customers, subscriptions, invoices, and related KPIs using curated Markdown context and approved database tables.
+
+## Core Features
+
+- **Markdown-centered domain packs**: Curated `knowledge/`, `skills/`, and `policies/` files live under `domains/<domain>/`.
+- **System prompt domain instruction injection**: `skills/*.md` and `policies/*.md` are loaded deterministically and included in every run's system prompt.
+- **Knowledge search and reading**: The agent can search Markdown knowledge with a naive backend or SQLite FTS, then read selected files by path.
+- **Read-only SQL tools**: Approved schema-qualified tables can be inspected through parser-validated `SELECT` queries only.
+- **Safety and redaction**: SQL results, trace events, provider-visible tool output, and persisted run metadata are redacted before storage or LLM use.
+- **Traceable runs**: Each run writes JSONL trace events with LLM calls, tool calls, usage, cost, errors, and final status.
+- **Multiple entry points**: The same runtime is available through the CLI, FastAPI HTTP API, and static Web UI.
+- **Deterministic local tests**: Provider doubles and pytest coverage exercise config, runtime behavior, trace schema, SQL safety, evals, and API behavior without live LLM calls.
+
 ## Project Status
 
 | Phase | Status | Baseline |
