@@ -17,9 +17,10 @@ All Phase 1 and Phase 2 capabilities are preserved. Phase 3 adds:
 - `runtime/run_store.py` — `RunStore` class backed by SQLite (`runs.db`). Operations: `create_run`, `update_run`, `get_run`.
 - Run lifecycle: `queued` → `running` → terminal status (mirrors `run_finished` statuses from Phase 2).
 - Redaction before DB storage: `question` and `final_answer` are passed through `redact_text()` before being written to `runs.db`.
-- `app/api.init()` — explicit initialization function (config load + RunStore creation). Callable from a server entrypoint or test fixture without depending on FastAPI lifespan.
+- `app/api.init()` — explicit initialization function (config load + RunStore creation). Also wired to a FastAPI `lifespan` so `uvicorn app.api:app` calls `init()` automatically on startup.
 - Background execution via `asyncio.get_running_loop().run_in_executor()` — the blocking `run_agent` call runs in a thread pool and does not block the event loop.
 - HTTP 503 returned when the service is not initialized (guards against calls before `init()` is invoked).
+- Trace JSONL events write `timestamp` as the first field, followed by remaining fields in insertion order.
 - HTTP 404 for unknown run IDs or missing trace files.
 
 ## Run Store Schema

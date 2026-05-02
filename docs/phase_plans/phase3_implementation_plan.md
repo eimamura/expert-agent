@@ -115,7 +115,8 @@ Reference: `docs/07_future_scaling.md` § Phase 3.
 
 **Deviations from plan:**
 
-- Used a module-level `init()` function instead of FastAPI lifespan, making the API easier to test without mocking the startup sequence.
+- Used a module-level `init()` function instead of FastAPI lifespan initially, making the API easier to test. A `_lifespan` context manager was added afterward that calls `init()` on startup, enabling `uvicorn app.api:app` without a custom entrypoint.
 - `input_hash` and `config_snapshot` are stored as empty strings at run creation and updated after `run_agent` completes.
+- Trace JSONL field order changed to `timestamp`-first after initial implementation (was `sort_keys=True` alphabetical order).
 
 **Test result at completion:** 103 passed, 0 failed.

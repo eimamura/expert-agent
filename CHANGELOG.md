@@ -5,6 +5,23 @@ The active implementation source is the split documentation set, starting from `
 
 ---
 
+## v3.10 - 2026-05-02
+
+Fixed trace JSONL field ordering: `timestamp` is now the first key in every event.
+
+- Changed `runtime/trace.py` from `sort_keys=True` to explicit `timestamp`-first ordering.
+
+---
+
+## v3.9 - 2026-05-02
+
+Wired FastAPI lifespan to `init()` so `uvicorn app.api:app` works without a custom entrypoint.
+
+- Added `_lifespan` context manager to `app/api.py`.
+- Updated README with the direct uvicorn command.
+
+---
+
 ## v3.8 - 2026-05-02
 
 Organized phase plan documentation.
