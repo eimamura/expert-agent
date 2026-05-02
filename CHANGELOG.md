@@ -5,6 +5,17 @@ The active implementation source is the split documentation set, starting from `
 
 ---
 
+## v3.7 - 2026-05-02
+
+Added the Phase 2 preparation plan.
+
+- Added `docs/09_phase2_implementation_plan.md` as a separate plan for trace, eval, and runtime refinement.
+- Kept `IMPLEMENTATION_PLAN.md` scoped to Phase 1 historical execution state.
+- Anchored Phase 2 planning to the `docs/08_version1_phase1_baseline.md` `v1.0.0` baseline.
+- Preserved Phase 1 guardrails in the Phase 2 planning scope.
+
+---
+
 ## v3.6 - 2026-05-02
 
 Clarified Phase 1 documentation after implementation-plan review.
