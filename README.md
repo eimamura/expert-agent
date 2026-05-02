@@ -52,7 +52,7 @@ Create local environment values:
 cp .env.example .env
 ```
 
-Set `ANTHROPIC_API_KEY` before running the CLI. If SQL tools are needed, set `DATABASE_URL` for a read-only database connection.
+Set `ANTHROPIC_API_KEY` in `.env` before running the CLI. The CLI automatically loads `.env` and uses `DATABASE_URL` from that file when SQL tools are needed.
 
 Create the optional local SQLite seed database:
 
