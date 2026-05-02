@@ -11,7 +11,7 @@
 | --- | --- |
 | Stable baseline | `docs/baselines/version2_phase2_baseline.md` |
 | Latest git tag | `v2.0.0` |
-| Active task | Phase 3 not yet planned — see [Future Scaling](07_future_scaling.md) |
+| Active task | `docs/phase_plans/phase3_implementation_plan.md` (HTTP API and run persistence) |
 | Runtime | Local CLI, single-agent, Anthropic provider |
 
 ## What is complete
@@ -28,7 +28,7 @@
 - Keep the CLI workflow supported alongside HTTP.
 - No write SQL tools. No LangGraph. No multi-agent.
 
-A `docs/phase_plans/phase3_implementation_plan.md` will be created before Phase 3 work begins.
+See `docs/phase_plans/phase3_implementation_plan.md` for the full Phase 3 plan.
 
 ## Routing
 
