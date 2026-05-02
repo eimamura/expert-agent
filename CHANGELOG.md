@@ -1,0 +1,103 @@
+# CHANGELOG
+
+This file records changes to the project specification and documentation.
+The active implementation source is the split documentation set, starting from `SPEC.md`.
+
+---
+
+## v3.5 - 2026-05-02
+
+Converted all repository Markdown files to English-only.
+
+- Rewrote the Phase 1 implementation plan in English.
+- Rewrote all `docs/*.md` files in English.
+- Rewrote the archived long spec in English-summary form.
+- Added an explicit English-only language policy.
+- Updated the prompt contract to use an English Phase 1 system prompt.
+
+---
+
+## v3.4 - 2026-05-02
+
+Split the previous single large `SPEC.md` into an entry file, detailed topic documents, a Phase 1 implementation plan, and AI coding-agent rules.
+
+- Preserved the previous complete SPEC v3.3 under `_archive/long_SPEC_archive.md`.
+- Changed `SPEC.md` into a short operational entry point.
+- Split details into `docs/00_project_overview.md` through `docs/07_future_scaling.md`.
+- Added `IMPLEMENTATION_PLAN.md` and fixed Phase 1 implementation order as Step 0 through Step 19.
+- Added `CLAUDE.md` as coding-agent guardrails.
+- Added checklist-based execution-state handling to `IMPLEMENTATION_PLAN.md`.
+- Clarified that `IMPLEMENTATION_PLAN.md` is Phase 1 only.
+- Added ignore files so `_archive/` is excluded from Claude, Cursor, and Codex exploration.
+
+---
+
+## v3.3 - 2026-05-02
+
+Merged senior-review feedback into the main specification and moved version history into this changelog.
+
+### Critical
+
+- Fixed the expected `sqlglot` `walk()` API usage.
+- Clarified that `redact_text()` is best-effort and that explicit PII column configuration is the primary protection.
+- Added `redacted_columns` metadata to SQL redaction output and trace events.
+
+### High
+
+- Defined duplicate handling for `tools_call_order`.
+- Added `schema_version` to trace events and made `parent_run_id` optional.
+- Raised `max_run_cost_usd` from 1.0 to 3.0.
+- Clarified trace file append and concurrency rules.
+- Clarified that `input_hash` identifies run conditions, not deterministic LLM output.
+
+### Medium
+
+- Required concrete `model_id` values in production config snapshots.
+- Rejected schema-less SQL table references in Phase 1.
+- Added `database.statement_timeout_seconds`.
+- Fixed the `list_knowledge_files()` return shape.
+
+### Low
+
+- Documented the default output sample size.
+- Added the `agents/prompts.py` contract.
+- Unified Phase 0 seed question schema with the later eval schema.
+
+---
+
+## v3.2 - 2026-05-02
+
+Older revision.
+
+- Switched SQL validation to AST walking.
+- Rejected absolute paths in `validate_knowledge_path()`.
+- Clarified pricing lookup normalization.
+- Added output-token and tool-result byte limits.
+- Fixed `run_finished.status` values.
+- Defined output sampling.
+- Specified SQL row redaction behavior.
+- Corrected `input_hash` scope.
+- Added knowledge file read limits.
+- Standardized trace timestamps.
+
+---
+
+## v3.1 - 2026-05
+
+Older revision.
+
+- Clarified `config_snapshot`.
+- Standardized UTC timestamps.
+- Documented Phase 1 redaction limits.
+- Clarified subquery table extraction.
+- Isolated ULID usage in `runtime/ids.py`.
+- Left date-partitioned trace directories as a future TODO.
+
+---
+
+## v3.0 - Initial
+
+- Established the Phase 0 through Phase 7 roadmap.
+- Defined the local-first MVP direction.
+- Introduced the minimal agent loop, Markdown knowledge, read-only tools, redaction, trace, and eval strategy.
+
