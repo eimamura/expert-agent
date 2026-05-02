@@ -75,13 +75,13 @@ Reference: `docs/07_future_scaling.md` § Phase 3.
 
 ## Completion checklist
 
-- [ ] Step 1: Add `fastapi` and `uvicorn` to dependencies.
-- [ ] Step 2: Create `runtime/run_store.py` — SQLite-backed run persistence (`create_run`, `update_run`, `get_run`).
-- [ ] Step 3: Create `app/api.py` — FastAPI app with `POST /runs`, `GET /runs/{run_id}`, `GET /runs/{run_id}/trace`.
-- [ ] Step 4: Wire async execution so `POST /runs` returns immediately and the agent loop runs in the background.
-- [ ] Step 5: Confirm CLI entry point (`app/main.py`) continues to work unchanged.
-- [ ] Step 6: Write pytest coverage for run store, API endpoints, and async execution.
-- [ ] Step 7: Update `docs/CURRENT_STATE.md` and `docs/baselines/README.md`.
+- [x] Step 1: Add `fastapi` and `uvicorn` to dependencies.
+- [x] Step 2: Create `runtime/run_store.py` — SQLite-backed run persistence (`create_run`, `update_run`, `get_run`).
+- [x] Step 3: Create `app/api.py` — FastAPI app with `POST /runs`, `GET /runs/{run_id}`, `GET /runs/{run_id}/trace`.
+- [x] Step 4: Wire async execution so `POST /runs` returns immediately and the agent loop runs in the background.
+- [x] Step 5: Confirm CLI entry point (`app/main.py`) continues to work unchanged.
+- [x] Step 6: Write pytest coverage for run store, API endpoints, and async execution.
+- [x] Step 7: Update `docs/CURRENT_STATE.md` and `docs/baselines/README.md`.
 
 ---
 
@@ -100,10 +100,22 @@ Reference: `docs/07_future_scaling.md` § Phase 3.
 
 ## Implementation Result
 
-**Status:** Pending
+**Status:** Complete
+**Released:** v3.0.0 (2026-05-02)
 
 **Implemented files:**
-- (To be filled on completion)
+
+| File | Change |
+| --- | --- |
+| `runtime/run_store.py` | New — `RunStore` class, SQLite-backed (`create_run`, `update_run`, `get_run`) |
+| `app/api.py` | New — FastAPI app with `POST /runs`, `GET /runs/{run_id}`, `GET /runs/{run_id}/trace`, `init()` |
+| `pyproject.toml` | Added `fastapi>=0.115.0`, `uvicorn[standard]>=0.30.0`; dev: `httpx>=0.27.0` |
+| `tests/test_run_store.py` | New — 11 unit tests for run store |
+| `tests/test_api.py` | New — 11 API endpoint tests |
 
 **Deviations from plan:**
-- (To be filled on completion)
+
+- Used a module-level `init()` function instead of FastAPI lifespan, making the API easier to test without mocking the startup sequence.
+- `input_hash` and `config_snapshot` are stored as empty strings at run creation and updated after `run_agent` completes.
+
+**Test result at completion:** 103 passed, 0 failed.
