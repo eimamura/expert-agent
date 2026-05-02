@@ -33,7 +33,7 @@ This document defines the Phase 1 agent loop, runtime config, model alias handli
 
 ## Config file
 
-`config/app.yml` should contain runtime, model, database, knowledge, trace, and pricing settings.
+`config/app.yml` should contain runtime, model, database, domain, knowledge, trace, and pricing settings.
 
 Example:
 
@@ -55,8 +55,10 @@ database:
   dialect: "sqlite"
   statement_timeout_seconds: 30
 
+domain:
+  root: "domains/subscription_commerce"
+
 knowledge:
-  root: "knowledge"
   max_file_read_bytes: 200000
 
 trace:
@@ -237,6 +239,7 @@ Phase 1 uses naive retrieval:
 - list available Markdown files;
 - include a short index in the system prompt;
 - let the agent call `read_knowledge_file(path)` for full content.
+- derive the knowledge directory from `domain.root / "knowledge"`.
 
 No vector DB is used in Phase 1.
 
@@ -265,10 +268,9 @@ def read_knowledge_file(root: Path, requested_path: str, max_bytes: int) -> str:
 - reject absolute paths;
 - normalize the requested path;
 - reject `..` traversal;
-- ensure the resolved path is under the knowledge root;
+- ensure the resolved path is under the derived knowledge directory;
 - read only Markdown files unless explicitly extended later;
 - enforce `knowledge.max_file_read_bytes`;
 - return a clear error for missing files.
 
 Use structured path APIs instead of string prefix checks.
-

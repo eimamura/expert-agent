@@ -9,7 +9,7 @@ import yaml
 
 
 REDACTION_TOKEN = "[REDACTED]"
-DEFAULT_RULES_PATH = Path("rules/redaction.yml")
+DEFAULT_RULES_PATH = Path("domains/subscription_commerce/rules/redaction.yml")
 
 
 class RedactedSqlResult(TypedDict):
@@ -19,7 +19,17 @@ class RedactedSqlResult(TypedDict):
     truncated: bool
 
 
-def _load_patterns(path: Path = DEFAULT_RULES_PATH) -> list[re.Pattern[str]]:
+def _default_rules_path() -> Path:
+    try:
+        from runtime.config import domain_path, load_config
+
+        return domain_path(load_config(), "rules", "redaction.yml")
+    except Exception:
+        return DEFAULT_RULES_PATH
+
+
+def _load_patterns(path: Path | None = None) -> list[re.Pattern[str]]:
+    path = path or _default_rules_path()
     if not path.exists():
         return []
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}

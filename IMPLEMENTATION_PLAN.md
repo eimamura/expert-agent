@@ -70,7 +70,7 @@ References:
 
 Work:
 
-- Create `app/`, `agents/`, `runtime/`, `tools/`, `config/`, `knowledge/`, `skills/`, `policies/`, `rules/`, `evals/`, `memory/`, `traces/`, and `tests/`.
+- Create `app/`, `agents/`, `runtime/`, `tools/`, `config/`, `domains/subscription_commerce/`, `memory/`, `traces/`, and `tests/`.
 - Add `traces/.gitkeep`.
 
 ## Step 2: Phase 0 knowledge files
@@ -81,15 +81,15 @@ References:
 
 Work:
 
-- Create `knowledge/domain_overview.md`.
-- Create `knowledge/kpi_definitions.md`.
-- Create `knowledge/database_schema.md`.
-- Create `skills/investigation_skill.md`.
-- Create `skills/sql_diagnosis_skill.md`.
-- Create `skills/report_generation_skill.md`.
-- Create `policies/db_safety.md`.
-- Create `policies/production_change_policy.md`.
-- Create `policies/response_policy.md`.
+- Create `domains/subscription_commerce/knowledge/domain_overview.md`.
+- Create `domains/subscription_commerce/knowledge/kpi_definitions.md`.
+- Create `domains/subscription_commerce/knowledge/database_schema.md`.
+- Create `domains/subscription_commerce/skills/investigation_skill.md`.
+- Create `domains/subscription_commerce/skills/sql_diagnosis_skill.md`.
+- Create `domains/subscription_commerce/skills/report_generation_skill.md`.
+- Create `domains/subscription_commerce/policies/db_safety.md`.
+- Create `domains/subscription_commerce/policies/production_change_policy.md`.
+- Create `domains/subscription_commerce/policies/response_policy.md`.
 
 ## Step 3: Rules and eval seeds
 
@@ -102,14 +102,14 @@ References:
 
 Work:
 
-- Create `rules/allowed_tables.yml`.
-- Create `rules/thresholds.yml`.
-- Create `rules/redaction.yml`.
-- Create `rules/pii_columns.yml`.
-- Create `evals/seed_questions.jsonl`.
-- Create `evals/sql_safety_cases.jsonl`.
-- Create `evals/domain_cases.jsonl`.
-- Create `evals/response_format_cases.jsonl`.
+- Create `domains/subscription_commerce/rules/allowed_tables.yml`.
+- Create `domains/subscription_commerce/rules/thresholds.yml`.
+- Create `domains/subscription_commerce/rules/redaction.yml`.
+- Create `domains/subscription_commerce/rules/pii_columns.yml`.
+- Create `domains/subscription_commerce/evals/seed_questions.jsonl`.
+- Create `domains/subscription_commerce/evals/sql_safety_cases.jsonl`.
+- Create `domains/subscription_commerce/evals/domain_cases.jsonl`.
+- Create `domains/subscription_commerce/evals/response_format_cases.jsonl`.
 
 ## Step 4: Runtime config
 
@@ -222,7 +222,7 @@ Work:
 - Support configured SQL dialects.
 - Use parser-backed SELECT-only validation.
 - Reject destructive AST nodes.
-- Validate referenced tables against `rules/allowed_tables.yml`.
+- Validate referenced tables against `domains/subscription_commerce/rules/allowed_tables.yml`.
 - Do not misclassify CTE names as physical tables.
 - Reject schema-less table references in Phase 1.
 - Add SQL validation and table-extraction tests.
@@ -326,10 +326,10 @@ Work:
 
 - Implement `tests/test_eval_runner.py`.
 - Load JSONL eval cases.
-- Validate `evals/seed_questions.jsonl`.
-- Validate `evals/sql_safety_cases.jsonl`.
-- Validate `evals/domain_cases.jsonl`.
-- Validate `evals/response_format_cases.jsonl`.
+- Validate `domains/subscription_commerce/evals/seed_questions.jsonl`.
+- Validate `domains/subscription_commerce/evals/sql_safety_cases.jsonl`.
+- Validate `domains/subscription_commerce/evals/domain_cases.jsonl`.
+- Validate `domains/subscription_commerce/evals/response_format_cases.jsonl`.
 - Support SQL safety cases.
 - Support domain cases.
 - Support response-format cases.

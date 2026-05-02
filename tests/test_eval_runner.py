@@ -4,10 +4,13 @@ import json
 from pathlib import Path
 
 from runtime.formatter import REQUIRED_SECTIONS
+from runtime.config import domain_path, load_config
 from tools.sql import extract_tables, validate_readonly_sql
 
 
 ALLOWED = {"main.customers", "main.orders", "main.order_items", "main.products"}
+CONFIG = load_config()
+EVAL_ROOT = domain_path(CONFIG, "evals")
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -15,7 +18,7 @@ def load_jsonl(path: Path) -> list[dict]:
 
 
 def test_seed_and_domain_eval_cases_have_required_fields() -> None:
-    for path in [Path("evals/seed_questions.jsonl"), Path("evals/domain_cases.jsonl")]:
+    for path in [EVAL_ROOT / "seed_questions.jsonl", EVAL_ROOT / "domain_cases.jsonl"]:
         cases = load_jsonl(path)
         assert cases
         for case in cases:
@@ -26,7 +29,7 @@ def test_seed_and_domain_eval_cases_have_required_fields() -> None:
 
 
 def test_sql_safety_eval_cases_are_deterministic() -> None:
-    cases = load_jsonl(Path("evals/sql_safety_cases.jsonl"))
+    cases = load_jsonl(EVAL_ROOT / "sql_safety_cases.jsonl")
     assert cases
     for case in cases:
         if case["allowed"]:
@@ -43,7 +46,7 @@ def test_sql_safety_eval_cases_are_deterministic() -> None:
 
 
 def test_response_format_eval_cases_reference_required_sections() -> None:
-    cases = load_jsonl(Path("evals/response_format_cases.jsonl"))
+    cases = load_jsonl(EVAL_ROOT / "response_format_cases.jsonl")
     assert cases
     for case in cases:
         assert case["required_sections"] == REQUIRED_SECTIONS

@@ -19,8 +19,10 @@ database:
   max_rows: 100
   max_result_bytes: 20000
 
+domain:
+  root: "domains/subscription_commerce"
+
 knowledge:
-  root: "knowledge"
   max_file_read_bytes: 200000
 
 trace:

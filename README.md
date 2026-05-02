@@ -67,7 +67,8 @@ Use a custom config file:
 uv run python -m app.main --config config/app.yml "Summarize the available KPI definitions."
 ```
 
-Runtime settings live in `config/app.yml`, including model aliases, limits, database dialect, knowledge root, trace directory, and pricing.
+Runtime settings live in `config/app.yml`, including model aliases, limits, database dialect, domain root, knowledge read-size limit, trace directory, and pricing.
+Domain assets live under the configured domain pack root, currently `domains/subscription_commerce/`; Markdown knowledge is loaded from that root's `knowledge/` directory.
 
 ## Test
 
@@ -85,13 +86,9 @@ The tests cover config validation, knowledge loading, redaction, SQL safety, SQL
 agents/     Prompt contract and agent-facing instructions
 app/        CLI entry point
 config/     Runtime configuration
+domains/    Domain packs with knowledge, skills, policies, rules, and evals
 docs/       Detailed project specification by topic
-evals/      JSONL eval and safety cases
-knowledge/  Markdown domain knowledge
-policies/   Markdown operating policies
-rules/      YAML allowlists, thresholds, and redaction rules
 runtime/    Agent loop, state, config, tracing, hashing, cost, redaction
-skills/     Markdown task procedures
 tests/      Pytest suite
 tools/      Read-only tool implementations
 traces/     Per-run JSONL trace output

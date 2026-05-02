@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from agents.prompts import SYSTEM_PROMPT_TEMPLATE
-from runtime.config import load_allowed_tables, runtime_snapshot, resolve_model_id
+from runtime.config import domain_path, knowledge_path, load_allowed_tables, runtime_snapshot, resolve_model_id
 from runtime.cost import CostTracker, estimate_call_cost_usd
 from runtime.formatter import ensure_response_format
 from runtime.hashing import compute_input_hash, sha256_text, stable_json_dumps
@@ -137,7 +137,7 @@ def build_input_hash_parts(
         "config_snapshot": config_snapshot,
         "tool_schema_identifiers": _tool_schema_identifiers(),
         "allowed_table_hash": sha256_text(stable_json_dumps(sorted(allowed_tables))),
-        "redaction_config_hash": _config_hash(Path("rules/redaction.yml")),
+        "redaction_config_hash": _config_hash(domain_path(config_snapshot, "rules", "redaction.yml")),
         "provider": config_snapshot["llm"]["provider"],
         "model_id": config_snapshot["llm"]["model_id"],
     }
@@ -148,7 +148,7 @@ def _execute_tool(name: str, args: dict[str, Any], config: dict[str, Any]) -> An
         return {
             "path": args["path"],
             "content": read_knowledge_file(
-                Path(config["knowledge"]["root"]),
+                knowledge_path(config),
                 args["path"],
                 int(config["knowledge"]["max_file_read_bytes"]),
             ),
@@ -177,8 +177,8 @@ def run_agent(
 ) -> AgentState:
     model_id, model_alias = resolve_model_id(config["llm"])
     snapshot = runtime_snapshot(config)
-    knowledge_index, knowledge_files = build_knowledge_index(Path(config["knowledge"]["root"]))
-    allowed_tables = load_allowed_tables()
+    knowledge_index, knowledge_files = build_knowledge_index(knowledge_path(config))
+    allowed_tables = load_allowed_tables(config)
     input_hash = compute_input_hash(
         build_input_hash_parts(
             question=question,

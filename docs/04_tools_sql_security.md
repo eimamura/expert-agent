@@ -18,8 +18,8 @@ This document defines the SQL tool and database-safety specification.
 ## Implementation targets
 
 - `tools/sql.py`
-- `rules/allowed_tables.yml`
-- `rules/pii_columns.yml`
+- `domains/subscription_commerce/rules/allowed_tables.yml`
+- `domains/subscription_commerce/rules/pii_columns.yml`
 - `tests/test_sql_safety.py`
 - `tests/test_tools.py`
 
@@ -84,7 +84,7 @@ The implementation must pass the configured dialect to `sqlglot`.
 
 ## Allowed tables
 
-`rules/allowed_tables.yml` should list fully qualified physical tables.
+`domains/subscription_commerce/rules/allowed_tables.yml` should list fully qualified physical tables.
 
 Example:
 

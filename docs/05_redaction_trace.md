@@ -20,8 +20,8 @@ This document defines redaction, trace, `input_hash`, and response-format requir
 - `runtime/redaction.py`
 - `runtime/trace.py`
 - `runtime/hashing.py`
-- `rules/redaction.yml`
-- `rules/pii_columns.yml`
+- `domains/subscription_commerce/rules/redaction.yml`
+- `domains/subscription_commerce/rules/pii_columns.yml`
 - `traces/`
 - `tests/test_redaction.py`
 - `tests/test_response_format.py`
@@ -38,8 +38,8 @@ Prevent secrets, credentials, and personally identifiable information from being
 
 Phase 1 uses two layers:
 
-1. Column-based SQL row redaction using `rules/pii_columns.yml`.
-2. Best-effort text redaction using configured patterns from `rules/redaction.yml`.
+1. Column-based SQL row redaction using `domains/subscription_commerce/rules/pii_columns.yml`.
+2. Best-effort text redaction using configured patterns from `domains/subscription_commerce/rules/redaction.yml`.
 
 Column-based SQL redaction is the stronger protection for structured results. Regex-based text redaction is explicitly best-effort and may miss sensitive data.
 
@@ -245,4 +245,3 @@ State missing data, assumptions, redaction limits, or ambiguity.
 ## Recommended Next Actions
 
 Practical next steps.
-

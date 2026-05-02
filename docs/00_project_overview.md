@@ -137,32 +137,34 @@ expert-agent/
     __init__.py
     sql.py
 
-  knowledge/
-    domain_overview.md
-    kpi_definitions.md
-    database_schema.md
+  domains/
+    subscription_commerce/
+      knowledge/
+        domain_overview.md
+        kpi_definitions.md
+        database_schema.md
 
-  skills/
-    investigation_skill.md
-    sql_diagnosis_skill.md
-    report_generation_skill.md
+      skills/
+        investigation_skill.md
+        sql_diagnosis_skill.md
+        report_generation_skill.md
 
-  policies/
-    db_safety.md
-    production_change_policy.md
-    response_policy.md
+      policies/
+        db_safety.md
+        production_change_policy.md
+        response_policy.md
 
-  rules/
-    allowed_tables.yml
-    thresholds.yml
-    redaction.yml
-    pii_columns.yml
+      rules/
+        allowed_tables.yml
+        thresholds.yml
+        redaction.yml
+        pii_columns.yml
 
-  evals/
-    seed_questions.jsonl
-    domain_cases.jsonl
-    sql_safety_cases.jsonl
-    response_format_cases.jsonl
+      evals/
+        seed_questions.jsonl
+        domain_cases.jsonl
+        sql_safety_cases.jsonl
+        response_format_cases.jsonl
 
   traces/
     .gitkeep

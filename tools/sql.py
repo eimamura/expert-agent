@@ -105,7 +105,8 @@ def _connect_sqlite(config: dict[str, Any]) -> sqlite3.Connection:
 
 
 def _load_runtime() -> tuple[dict[str, Any], set[str], set[str]]:
-    return load_config(), load_allowed_tables(), load_pii_columns()
+    config = load_config()
+    return config, load_allowed_tables(config), load_pii_columns(config)
 
 
 def list_tables() -> list[str]:

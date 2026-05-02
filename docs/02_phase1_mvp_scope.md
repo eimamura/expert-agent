@@ -20,11 +20,11 @@ This document defines Phase 0 and Phase 1 MVP scope, non-goals, and completion c
 
 ## Implementation targets
 
-- `knowledge/`
-- `skills/`
-- `policies/`
-- `rules/`
-- `evals/`
+- `domains/subscription_commerce/knowledge/`
+- `domains/subscription_commerce/skills/`
+- `domains/subscription_commerce/policies/`
+- `domains/subscription_commerce/rules/`
+- `domains/subscription_commerce/evals/`
 - `app/main.py`
 - `agents/`
 - `runtime/`
@@ -43,32 +43,32 @@ Phase 0 does not build the runtime. The goal is not to create many files for the
 
 ## Required files
 
-### `knowledge/`
+### `domains/subscription_commerce/knowledge/`
 
 - `domain_overview.md`: domain concepts, business context, terminology, and common questions.
 - `kpi_definitions.md`: metric definitions, calculation formulas, interpretation notes, and caveats.
 - `database_schema.md`: table descriptions, key columns, joins, and known data-quality issues.
 
-### `skills/`
+### `domains/subscription_commerce/skills/`
 
 - `investigation_skill.md`: how the agent should investigate a question.
 - `sql_diagnosis_skill.md`: how the agent should inspect data with SQL.
 - `report_generation_skill.md`: how the agent should structure final answers.
 
-### `policies/`
+### `domains/subscription_commerce/policies/`
 
 - `db_safety.md`: allowed and forbidden DB behavior.
 - `production_change_policy.md`: production mutation is forbidden in Phase 1.
 - `response_policy.md`: evidence, uncertainty, and recommendation rules.
 
-### `rules/`
+### `domains/subscription_commerce/rules/`
 
 - `allowed_tables.yml`: approved tables.
 - `thresholds.yml`: project-specific thresholds.
 - `redaction.yml`: text redaction patterns.
 - `pii_columns.yml`: columns that must be redacted in SQL results.
 
-### `evals/seed_questions.jsonl`
+### `domains/subscription_commerce/evals/seed_questions.jsonl`
 
 Initial expected questions should use the same shape as later eval cases:
 
@@ -223,4 +223,3 @@ Low priority:
 
 - trace pretty-printer
 - date-partitioned trace directory TODO
-

@@ -28,7 +28,7 @@ def resolve_model_id(llm_config: dict[str, Any]) -> tuple[str, str | None]:
 
 
 def validate_config(config: dict[str, Any]) -> dict[str, Any]:
-    required = ["runtime", "llm", "database", "knowledge", "trace", "pricing"]
+    required = ["runtime", "llm", "database", "domain", "knowledge", "trace", "pricing"]
     missing = [key for key in required if key not in config]
     if missing:
         raise ValueError(f"Missing config sections: {', '.join(missing)}")
@@ -59,6 +59,16 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
     if dialect not in SUPPORTED_DIALECTS:
         raise ValueError(f"Unsupported SQL dialect: {dialect}")
 
+    domain_root = str(config["domain"].get("root", "")).strip()
+    if not domain_root:
+        raise ValueError("domain.root must be set")
+    domain_path = Path(domain_root)
+    if domain_path.is_absolute() or ".." in domain_path.parts:
+        raise ValueError("domain.root must be a relative repository path")
+
+    if config["knowledge"].get("max_file_read_bytes", 0) <= 0:
+        raise ValueError("knowledge.max_file_read_bytes must be positive")
+
     return config
 
 
@@ -77,11 +87,31 @@ def runtime_snapshot(config: dict[str, Any]) -> dict[str, Any]:
     return snapshot
 
 
-def load_allowed_tables(path: Path | str = Path("rules/allowed_tables.yml")) -> set[str]:
-    data = load_yaml(Path(path))
+def domain_path(config: dict[str, Any], *parts: str) -> Path:
+    return Path(config["domain"]["root"], *parts)
+
+
+def knowledge_path(config: dict[str, Any]) -> Path:
+    return domain_path(config, "knowledge")
+
+
+def load_allowed_tables(config_or_path: dict[str, Any] | Path | str | None = None) -> set[str]:
+    if config_or_path is None:
+        path = domain_path(load_config(), "rules", "allowed_tables.yml")
+    elif isinstance(config_or_path, dict):
+        path = domain_path(config_or_path, "rules", "allowed_tables.yml")
+    else:
+        path = Path(config_or_path)
+    data = load_yaml(path)
     return set(data.get("allowed_tables") or [])
 
 
-def load_pii_columns(path: Path | str = Path("rules/pii_columns.yml")) -> set[str]:
-    data = load_yaml(Path(path))
+def load_pii_columns(config_or_path: dict[str, Any] | Path | str | None = None) -> set[str]:
+    if config_or_path is None:
+        path = domain_path(load_config(), "rules", "pii_columns.yml")
+    elif isinstance(config_or_path, dict):
+        path = domain_path(config_or_path, "rules", "pii_columns.yml")
+    else:
+        path = Path(config_or_path)
+    data = load_yaml(path)
     return set(data.get("pii_columns") or [])

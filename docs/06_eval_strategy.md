@@ -17,7 +17,7 @@ This document defines eval, pytest, trace use, and quality checks.
 
 ## Implementation targets
 
-- `evals/*.jsonl`
+- `domains/subscription_commerce/evals/*.jsonl`
 - `tests/test_eval_runner.py`
 - `tests/test_sql_safety.py`
 - `tests/test_redaction.py`
@@ -74,7 +74,7 @@ This allows additional calls between expected calls.
 
 ## SQL safety cases
 
-`evals/sql_safety_cases.jsonl` should include:
+`domains/subscription_commerce/evals/sql_safety_cases.jsonl` should include:
 
 - allowed SELECT;
 - multiple statements;
@@ -91,7 +91,7 @@ This allows additional calls between expected calls.
 
 ## Domain cases
 
-`evals/domain_cases.jsonl` should include representative domain questions:
+`domains/subscription_commerce/evals/domain_cases.jsonl` should include representative domain questions:
 
 - definition questions;
 - KPI interpretation questions;
@@ -101,7 +101,7 @@ This allows additional calls between expected calls.
 
 ## Response format cases
 
-`evals/response_format_cases.jsonl` should verify that final answers include the required sections.
+`domains/subscription_commerce/evals/response_format_cases.jsonl` should verify that final answers include the required sections.
 
 ## Eval runner
 
@@ -137,4 +137,3 @@ Phase 2 is not part of `IMPLEMENTATION_PLAN.md`, but the future Phase 2 plan sho
 - path traversal tests are expanded;
 - SQL dialect tests exist;
 - CTE extraction tests exist.
-
