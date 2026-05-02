@@ -11,7 +11,7 @@
 | --- | --- |
 | Stable baseline | `docs/baselines/version3_phase3_baseline.md` |
 | Latest git tag | `v3.0.0` |
-| Active task | `docs/phase_plans/phase4_implementation_plan.md` (SQLite FTS knowledge search) |
+| Active task | `docs/phase_plans/phase6_implementation_plan.md` (Web UI — channel adapter) |
 | Runtime | CLI + FastAPI HTTP API, single-agent, Anthropic provider |
 
 ## What is complete
@@ -22,12 +22,12 @@
 
 ## What is next
 
-**Phase 4: SQLite FTS Knowledge Search** (`docs/phase_plans/phase4_implementation_plan.md`)
+**Phase 6: Web UI** (`docs/phase_plans/phase6_implementation_plan.md`)
 
-- `SearchBackend` Protocol + `SqliteFtsBackend` behind interface
-- New `search_knowledge` tool for keyword search before file reads
-- `NaiveBackend` preserves current behavior when `search_backend: naive`
-- Triggered when: Markdown files too numerous, retrieval quality degrades, or latency unacceptable
+- Minimal HTML + vanilla JS chat UI served by FastAPI
+- Channels call `POST /runs` → poll `GET /runs/{id}` → render answer
+- Phase 5 (LangGraph) skipped — trigger conditions not yet met. See `docs/decisions/ADR-0005-skip-phase5-langgraph.md`.
+- Phase 4 (SQLite FTS) also deferred — knowledge base still small enough for naive retrieval.
 
 ## Routing
 
