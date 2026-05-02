@@ -2,9 +2,11 @@
 
 ## Rules
 
-- Always read `SPEC.md` first.
+- Always read `docs/CURRENT_STATE.md` first to understand the current phase, active exclusions, and routing.
+- Then read `SPEC.md`.
 - Then read `docs/00_project_overview.md` and `docs/01_architecture_principles.md`.
 - For current baseline context, read `docs/baselines/README.md` and `docs/phase_plans/README.md`.
+- For architecture decisions (why something was built a certain way), read `docs/decisions/ADR-*.md`.
 - Read `docs/phase_plans/phase2_implementation_plan.md` for the Phase 2 completion summary.
 - Read `docs/phase_plans/phase1_implementation_plan.md` only for Phase 1 history.
 - Read the relevant `docs/*.md` files before editing implementation files.
@@ -28,8 +30,10 @@
 
 ## Context loading
 
-- Load stable context first: `SPEC.md`, then `docs/00_project_overview.md`, then `docs/01_architecture_principles.md`.
+- Load `docs/CURRENT_STATE.md` first — it provides routing to everything else.
+- Load stable context next: `SPEC.md`, then `docs/00_project_overview.md`, then `docs/01_architecture_principles.md`.
 - Load current baseline context after stable context: `docs/baselines/README.md`, then `docs/phase_plans/README.md`.
+- Load `docs/decisions/ADR-*.md` when the task requires understanding why an architectural constraint exists.
 - Load a phase-specific plan only when the user explicitly requests work in that phase or the task directly concerns that phase's history.
 - Load only the topic-specific `docs/*.md` files needed for the current step.
 - Prefer the split documents over archived material to avoid stale-spec conflicts.
