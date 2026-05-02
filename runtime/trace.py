@@ -48,8 +48,9 @@ class TraceWriter:
         event = self._base(event_type)
         event.update(fields)
         redacted = redact_jsonable(event)
+        ordered = {"timestamp": redacted.pop("timestamp")} | redacted
         with self.path.open("a", encoding="utf-8", buffering=1) as handle:
-            handle.write(json.dumps(redacted, sort_keys=True, default=str) + "\n")
+            handle.write(json.dumps(ordered, sort_keys=False, default=str) + "\n")
 
     def run_started(self, *, input_hash: str, config_snapshot: dict[str, Any], question: str) -> None:
         self.write(
