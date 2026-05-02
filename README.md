@@ -53,6 +53,14 @@ cp .env.example .env
 
 Set `ANTHROPIC_API_KEY` before running the CLI. If SQL tools are needed, set `DATABASE_URL` for a read-only database connection.
 
+Create the optional local SQLite seed database:
+
+```bash
+uv run python scripts/create_local_sqlite.py
+```
+
+This creates `data/local.sqlite`, matching the `DATABASE_URL=sqlite:///./data/local.sqlite` value in `.env.example`. Re-run with `--force` only when you intentionally want to replace the local seed database.
+
 ## Run
 
 Run the local expert agent:
@@ -89,6 +97,7 @@ config/     Runtime configuration
 domains/    Domain packs with knowledge, skills, policies, rules, and evals
 docs/       Detailed project specification by topic
 runtime/    Agent loop, state, config, tracing, hashing, cost, redaction
+scripts/    Local developer setup utilities
 tests/      Pytest suite
 tools/      Read-only tool implementations
 traces/     Per-run JSONL trace output
