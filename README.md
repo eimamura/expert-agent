@@ -7,6 +7,7 @@ This repository implements the Phase 1 version of a single-agent, Markdown-cente
 ## Project Status
 
 Phase 1 is the current target and is marked complete in `IMPLEMENTATION_PLAN.md`.
+See `docs/08_version1_phase1_baseline.md` for the Version 1 Phase 1 comparison baseline.
 
 Phase 1 includes:
 
