@@ -10,12 +10,15 @@ from typing import Any, Protocol
 from agents.prompts import SYSTEM_PROMPT_TEMPLATE
 from runtime.config import domain_path, knowledge_path, load_allowed_tables, runtime_snapshot, resolve_model_id
 from runtime.cost import CostTracker, estimate_call_cost_usd
+from runtime.fts_backend import SqliteFtsBackend
 from runtime.formatter import ensure_response_format
 from runtime.hashing import compute_input_hash, sha256_text, stable_json_dumps
 from runtime.ids import new_run_id
-from runtime.knowledge_loader import build_knowledge_index, read_knowledge_file
+from runtime.knowledge_loader import build_knowledge_index, read_knowledge_file, search_knowledge_files
+from runtime.naive_backend import NaiveBackend
 from runtime.provider_double import ScriptedProviderTimeout
 from runtime.redaction import redact_jsonable
+from runtime.search_backend import SearchBackend
 from runtime.state import AgentState
 from runtime.trace import TraceWriter
 from tools.sql import get_table_schema, list_tables, run_readonly_sql
@@ -36,6 +39,15 @@ class LlmProvider(Protocol):
 
 
 TOOL_SCHEMAS = [
+    {
+        "name": "search_knowledge",
+        "description": "Search the knowledge base by keyword. Returns ranked file names and snippets. Use this before read_knowledge_file when you are not sure which file to read.",
+        "input_schema": {
+            "type": "object",
+            "properties": {"query": {"type": "string"}},
+            "required": ["query"],
+        },
+    },
     {
         "name": "read_knowledge_file",
         "description": "Read a Markdown knowledge file by relative path.",
@@ -148,7 +160,18 @@ def build_input_hash_parts(
     }
 
 
-def _execute_tool(name: str, args: dict[str, Any], config: dict[str, Any]) -> Any:
+def _execute_tool(
+    name: str,
+    args: dict[str, Any],
+    config: dict[str, Any],
+    backend: SearchBackend | None = None,
+) -> Any:
+    if name == "search_knowledge":
+        if backend is None:
+            raise ValueError("search_knowledge requires a search backend")
+        top_n = int(config["knowledge"].get("index_top_n", 10))
+        results = search_knowledge_files(backend, args["query"], top_n)
+        return {"results": results}
     if name == "read_knowledge_file":
         return {
             "path": args["path"],
@@ -218,10 +241,15 @@ def _call_provider_with_timeout(provider: LlmProvider, timeout_seconds: int, **k
     )
 
 
-def _execute_tool_with_timeout(name: str, args: dict[str, Any], config: dict[str, Any]) -> Any:
+def _execute_tool_with_timeout(
+    name: str,
+    args: dict[str, Any],
+    config: dict[str, Any],
+    backend: SearchBackend | None = None,
+) -> Any:
     timeout_seconds = int(config["runtime"]["tool_timeout_seconds"])
     return _run_with_timeout(
-        lambda: _execute_tool(name, args, config),
+        lambda: _execute_tool(name, args, config, backend),
         timeout_seconds,
         f"Tool call exceeded {timeout_seconds} seconds",
     )
@@ -252,7 +280,15 @@ def run_agent(
 ) -> AgentState:
     model_id, model_alias = resolve_model_id(config["llm"])
     snapshot = runtime_snapshot(config)
-    knowledge_index, knowledge_files = build_knowledge_index(knowledge_path(config))
+    search_backend_type = config["knowledge"].get("search_backend", "naive")
+    top_n = int(config["knowledge"].get("index_top_n", 10))
+    kpath = knowledge_path(config)
+    if search_backend_type == "sqlite_fts":
+        fts_db_path = Path(config["knowledge"].get("fts_db_path", "knowledge_index.db"))
+        backend: SearchBackend = SqliteFtsBackend(kpath, fts_db_path)
+    else:
+        backend = NaiveBackend(kpath)
+    knowledge_index, knowledge_files = build_knowledge_index(kpath, backend=backend, top_n=top_n)
     allowed_tables = load_allowed_tables(config)
     input_hash = compute_input_hash(
         build_input_hash_parts(
@@ -348,7 +384,7 @@ def run_agent(
                 name = tool_use["name"]
                 args = tool_use.get("input") or {}
                 try:
-                    result = _execute_tool_with_timeout(name, args, config)
+                    result = _execute_tool_with_timeout(name, args, config, backend)
                     result, oversized, observed_size = _truncate_tool_result(
                         result, int(config["runtime"]["max_tool_result_bytes"])
                     )

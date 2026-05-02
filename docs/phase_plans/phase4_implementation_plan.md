@@ -8,7 +8,7 @@ Phase 4 starts from the released Phase 3 `v3.0.1` baseline recorded in `docs/bas
 
 ## Status
 
-Phase 4 is not started.
+Phase 4 is complete. Released as `v4.0.0`.
 
 ## Objective
 
@@ -102,14 +102,14 @@ knowledge:
 
 ## Completion checklist
 
-- [ ] Step 1: Add `runtime/search_backend.py` — `SearchBackend` Protocol + `SearchResult` TypedDict.
-- [ ] Step 2: Add `runtime/fts_backend.py` — `SqliteFtsBackend` (FTS5 index from `knowledge/*.md`).
-- [ ] Step 3: Add `runtime/naive_backend.py` — `NaiveBackend` wrapping existing `list_knowledge_files()`.
-- [ ] Step 4: Modify `runtime/knowledge_loader.py` — accept `SearchBackend`, use it in `build_knowledge_index()`.
-- [ ] Step 5: Add `search_knowledge` tool to `runtime/loop.py` tool schemas and `_execute_tool()`.
-- [ ] Step 6: Add `knowledge.search_backend`, `knowledge.index_top_n`, `knowledge.fts_db_path` to `config/app.yml` and validate in `runtime/config.py`.
-- [ ] Step 7: Write pytest coverage — FTS indexing, search ranking, tool execution, naive fallback, input_hash stability.
-- [ ] Step 8: Update `docs/CURRENT_STATE.md`, `docs/baselines/README.md`, and this file.
+- [x] Step 1: Add `runtime/search_backend.py` — `SearchBackend` Protocol + `SearchResult` TypedDict.
+- [x] Step 2: Add `runtime/fts_backend.py` — `SqliteFtsBackend` (FTS5 index from `knowledge/*.md`).
+- [x] Step 3: Add `runtime/naive_backend.py` — `NaiveBackend` wrapping existing `list_knowledge_files()`.
+- [x] Step 4: Modify `runtime/knowledge_loader.py` — accept `SearchBackend`, use it in `build_knowledge_index()`.
+- [x] Step 5: Add `search_knowledge` tool to `runtime/loop.py` tool schemas and `_execute_tool()`.
+- [x] Step 6: Add `knowledge.search_backend`, `knowledge.index_top_n`, `knowledge.fts_db_path` to `config/app.yml` and validate in `runtime/config.py`.
+- [x] Step 7: Write pytest coverage — FTS indexing, search ranking, tool execution, naive fallback, input_hash stability.
+- [x] Step 8: Update `docs/CURRENT_STATE.md`, `docs/baselines/README.md`, and this file.
 
 ---
 
@@ -126,10 +126,18 @@ knowledge:
 
 ## Implementation Result
 
-**Status:** Pending
+**Status:** Complete (`v4.0.0`)
 
 **Implemented files:**
-- (To be filled on completion)
+- `runtime/search_backend.py` — `SearchBackend` Protocol + `SearchResult` TypedDict
+- `runtime/naive_backend.py` — `NaiveBackend` wrapping `list_knowledge_files()`
+- `runtime/fts_backend.py` — `SqliteFtsBackend` using SQLite FTS5
+- `runtime/knowledge_loader.py` — `build_knowledge_index()` now accepts optional `SearchBackend` and `top_n`; added `search_knowledge_files()`
+- `runtime/loop.py` — added `search_knowledge` tool schema, `_execute_tool` and `_execute_tool_with_timeout` accept `backend`; `run_agent` creates backend from config
+- `config/app.yml` — added `search_backend`, `index_top_n`, `fts_db_path`
+- `runtime/config.py` — validates `search_backend` and `index_top_n`
+- `tests/test_search_backend.py` — 16 tests covering NaiveBackend, SqliteFtsBackend, build_knowledge_index, search_knowledge_files
 
 **Deviations from plan:**
-- (To be filled on completion)
+- `build_knowledge_index()` retains optional `backend=None` for backward compatibility (falls back to `list_knowledge_files()`)
+- `_execute_tool` takes `backend: SearchBackend | None = None` rather than a separate injection mechanism

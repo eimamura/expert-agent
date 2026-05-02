@@ -16,7 +16,9 @@ def test_list_knowledge_files_markdown_only(tmp_path: Path) -> None:
     assert files[0]["sha256"]
     index, source = build_knowledge_index(tmp_path)
     assert "a.md" in index
-    assert source == files
+    assert len(source) == len(files)
+    assert source[0]["path"] == files[0]["path"]
+    assert source[0]["sha256"] == files[0]["sha256"]
 
 
 def test_read_knowledge_file_rejects_absolute_path(tmp_path: Path) -> None:

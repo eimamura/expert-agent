@@ -26,6 +26,9 @@ domain:
 
 knowledge:
   max_file_read_bytes: 200000
+  search_backend: "naive"
+  index_top_n: 10
+  fts_db_path: "knowledge_index.db"
 
 trace:
   dir: "traces"

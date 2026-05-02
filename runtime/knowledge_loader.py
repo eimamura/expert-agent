@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TypedDict
+from typing import TYPE_CHECKING, TypedDict
 from urllib.parse import unquote
 
 from runtime.hashing import sha256_text
+
+if TYPE_CHECKING:
+    from runtime.search_backend import SearchBackend, SearchResult
 
 
 class KnowledgeFileInfo(TypedDict):
@@ -50,16 +53,37 @@ def list_knowledge_files(root: Path) -> list[KnowledgeFileInfo]:
     return files
 
 
-def build_knowledge_index(root: Path) -> tuple[str, list[KnowledgeFileInfo]]:
-    files = list_knowledge_files(root)
-    if not files:
-        return "No Markdown knowledge files found.", files
-    lines = []
-    for info in files:
-        lines.append(
-            f"- {info['path']} ({info['bytes']} bytes, sha256={info['sha256']}): {info['preview']}"
-        )
-    return "\n".join(lines), files
+def build_knowledge_index(
+    root: Path,
+    backend: SearchBackend | None = None,
+    top_n: int | None = None,
+) -> tuple[str, list[SearchResult]]:
+    if backend is not None:
+        results = backend.get_all()
+    else:
+        raw = list_knowledge_files(root)
+        results = [
+            {
+                "path": f["path"],
+                "preview": f["preview"],
+                "score": 1.0,
+                "sha256": f["sha256"],
+                "bytes": f["bytes"],
+            }
+            for f in raw
+        ]
+    if not results:
+        return "No Markdown knowledge files found.", []
+    shown = results[:top_n] if top_n is not None else results
+    lines = [
+        f"- {r['path']} ({r['bytes']} bytes, sha256={r['sha256']}): {r['preview']}"
+        for r in shown
+    ]
+    return "\n".join(lines), results
+
+
+def search_knowledge_files(backend: SearchBackend, query: str, top_n: int) -> list[SearchResult]:
+    return backend.search(query, top_n)
 
 
 def read_knowledge_file(root: Path, requested_path: str, max_bytes: int) -> str:

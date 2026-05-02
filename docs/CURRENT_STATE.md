@@ -1,7 +1,7 @@
 # docs/CURRENT_STATE.md
 
 **Last Updated:** 2026-05-02
-**Current Phase:** Phase 3 (Complete)
+**Current Phase:** Phase 4 (Complete)
 
 ---
 
@@ -9,8 +9,8 @@
 
 | Item | Value |
 | --- | --- |
-| Stable baseline | `docs/baselines/version3_phase3_baseline.md` |
-| Latest git tag | `v3.0.0` |
+| Stable baseline | `docs/baselines/version4_phase4_baseline.md` |
+| Latest git tag | `v4.0.0` |
 | Active task | `docs/phase_plans/phase6_implementation_plan.md` (Web UI — channel adapter) |
 | Runtime | CLI + FastAPI HTTP API, single-agent, Anthropic provider |
 
@@ -19,6 +19,7 @@
 - **Phase 1** — CLI MVP: domain pack loading, Markdown knowledge, read-only SQL, redaction, JSONL trace, basic evals. See `docs/baselines/version1_phase1_baseline.md`.
 - **Phase 2** — Trace schema validation, provider test doubles, eval assertions, normalized error metadata. See `docs/baselines/version2_phase2_baseline.md`.
 - **Phase 3** — FastAPI HTTP API (`POST /runs`, `GET /runs/{id}`, `GET /runs/{id}/trace`), SQLite run persistence, async background execution. See `docs/baselines/version3_phase3_baseline.md`.
+- **Phase 4** — `SearchBackend` Protocol, `NaiveBackend`, `SqliteFtsBackend` (FTS5), `search_knowledge` tool, pluggable config. See `docs/baselines/version4_phase4_baseline.md`.
 
 ## What is next
 

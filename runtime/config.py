@@ -9,6 +9,7 @@ import yaml
 
 SUPPORTED_PROVIDERS = {"anthropic"}
 SUPPORTED_DIALECTS = {"sqlite", "postgres", "mysql", "tsql", "databricks"}
+SUPPORTED_SEARCH_BACKENDS = {"naive", "sqlite_fts"}
 
 
 def load_yaml(path: Path) -> dict[str, Any]:
@@ -70,6 +71,14 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
 
     if config["knowledge"].get("max_file_read_bytes", 0) <= 0:
         raise ValueError("knowledge.max_file_read_bytes must be positive")
+
+    search_backend = config["knowledge"].get("search_backend", "naive")
+    if search_backend not in SUPPORTED_SEARCH_BACKENDS:
+        raise ValueError(f"Unsupported knowledge.search_backend: {search_backend}")
+
+    index_top_n = config["knowledge"].get("index_top_n", 10)
+    if not isinstance(index_top_n, int) or index_top_n <= 0:
+        raise ValueError("knowledge.index_top_n must be a positive integer")
 
     return config
 
