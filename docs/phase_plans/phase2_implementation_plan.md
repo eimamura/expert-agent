@@ -50,6 +50,35 @@ Use the same command for future regression checks. If the local environment need
 UV_CACHE_DIR=/tmp/uv-cache uv run pytest
 ```
 
+## Implementation Result
+
+**Status:** Complete
+**Released:** v2.0.0 (2026-05-02)
+
+**Implemented files:**
+
+| File | Change |
+| --- | --- |
+| `runtime/trace_schema.py` | New — Pydantic trace schema, `NormalizedError`, `validate_trace_event()` |
+| `runtime/provider_double.py` | New — `ProviderDouble`, `ScriptedProviderError`, `ScriptedProviderTimeout`, `final_answer()`, `tool_request()` |
+| `runtime/trace_reader.py` | New — `read_trace_jsonl()`, `load_validated_trace()`, `assert_trace_replayable()` |
+| `runtime/trace_summary.py` | New — `summarize_trace()` |
+| `runtime/eval_assertions.py` | New — `assert_trace_case()`, `has_partial_order()`, `tool_names()` |
+| `fixtures/traces/*.jsonl` | New — 7 fixture traces (success, tool_error, max_steps, max_cost, provider_error, timeout_error, validation_error) |
+| `runtime/loop.py` | Modified — normalized error metadata, budget tracking, timeout handling |
+| `runtime/trace.py` | Modified — added `RUN_FINISHED_STATUSES`, `SCHEMA_VERSION` constants |
+| `tests/test_provider_double.py` | New |
+| `tests/test_trace_schema.py` | New |
+| `tests/test_trace_replay.py` | New |
+| `tests/test_trace_summary.py` | New |
+| `tests/test_eval_assertions.py` | New |
+
+**Deviations from plan:** None. All Phase 1 guardrails preserved intact.
+
+**Test result at completion:** 82 passed, 0 failed.
+
+---
+
 ## Guardrails
 
 - Keep the runtime local-first.
