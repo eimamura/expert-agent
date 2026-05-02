@@ -11,7 +11,7 @@
 | --- | --- |
 | Stable baseline | `docs/baselines/version3_phase3_baseline.md` |
 | Latest git tag | `v3.0.0` |
-| Active task | Phase 4 not yet planned — see [Future Scaling](07_future_scaling.md) |
+| Active task | `docs/phase_plans/phase4_implementation_plan.md` (SQLite FTS knowledge search) |
 | Runtime | CLI + FastAPI HTTP API, single-agent, Anthropic provider |
 
 ## What is complete
@@ -22,11 +22,12 @@
 
 ## What is next
 
-**Phase 4: External Search** (`docs/07_future_scaling.md` § Phase 4)
+**Phase 4: SQLite FTS Knowledge Search** (`docs/phase_plans/phase4_implementation_plan.md`)
 
-- Improve knowledge retrieval beyond naive Markdown listing.
-- Candidates: SQLite FTS, Postgres full-text search, vector DB.
-- Triggered when: Markdown files too numerous, retrieval quality degrades, or latency unacceptable.
+- `SearchBackend` Protocol + `SqliteFtsBackend` behind interface
+- New `search_knowledge` tool for keyword search before file reads
+- `NaiveBackend` preserves current behavior when `search_backend: naive`
+- Triggered when: Markdown files too numerous, retrieval quality degrades, or latency unacceptable
 
 ## Routing
 
